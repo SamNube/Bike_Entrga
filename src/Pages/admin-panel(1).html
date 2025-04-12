@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Bike Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/admin-panel.css">
+    <style>
+        /* Estilos para el stock */
+        .stock-low {
+            color: #fff;
+            background-color: #ff4444;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .stock-normal {
+            color: #fff;
+            background-color: #4CAF50;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        /* Estilos para notificaciones de stock bajo */
+        .stock-alert {
+            background-color: #ffecec;
+            border-left: 4px solid #ff4444;
+            margin-bottom: 10px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .stock-alert-container {
+            margin-bottom: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .dismiss-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="notification" id="notification"></div>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="../img/logocion.png" alt="Bike Store Logo">
+                <h3>Admin Panel</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active" onclick="showSection('productos')">
+                    <i class="fas fa-bicycle"></i>
+                    <span>Productos</span>
+                </li>
+                <li onclick="showSection('stock')">
+                    <i class="fas fa-boxes"></i>
+                    <span>Gestión de Stock</span>
+                </li>
+                <li onclick="showSection('dashboard')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Historial de ventas</span>
+                </li>
+                <li onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar sesión</span>
+                </li>
+
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Section -->
+            <div class="section" id="dashboard">
+                <div class="page-header">
+                    <h1>Reporte de Ventas</h1>
+                    <div class="report-actions">
+                        <div class="date-range">
+                            <label for="fechaInicio">Desde:</label>
+                            <input type="date" id="fechaInicio">
+                            <label for="fechaFin">Hasta:</label>
+                            <input type="date" id="fechaFin">
+                            <button class="btn-generate" onclick="generarReporteVentas()">
+                                <i class="fas fa-sync-alt"></i> Generar Reporte
+                            </button>
+                            <button class="btn-export" onclick="exportarReporteCSV()">
+                                <i class="fas fa-file-export"></i> Exportar CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Tabla de Ventas -->
+                <div class="report-section">
+                    <h2>Historial de Ventas</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Venta</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Email</th>
+                                <th>Productos</th>
+                                <th>Unidades</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reporte-ventas-tabla">
+                            <!-- Aquí se cargarán las ventas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Productos Más Vendidos -->
+                <div class="report-section">
+                    <h2>Productos Más Vendidos</h2>
+                    <div class="top-products" id="productos-mas-vendidos">
+                        <!-- Aquí se cargarán los productos más vendidos -->
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Productos Section -->
+            <div class="section active" id="productos">
+                <div class="page-header">
+                    <h1>Gestión de Productos</h1>
+                    <button class="btn-add" onclick="showProductModal()">
+                        <i class="fas fa-plus"></i> Nuevo Producto
+                    </button>
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Categoría</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productos-tabla">
+                        <!-- Aquí se cargarán los productos dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Stock Section -->
+            <div class="section" id="stock">
+                <div class="page-header">
+                    <h1>Gestión de Stock</h1>
+                </div>
+
+                <div class="stock-alert-container" id="stockAlerts">
+                    <!-- Las alertas de stock bajo se mostrarán aquí -->
+                </div>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Stock Actual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-tabla">
+                        <!-- Aquí se cargarán los productos para gestión de stock -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Detalle de Venta -->
+    <div id="detalleVentaModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close-modal" onclick="cerrarDetalleVentaModal()">&times;</span>
+            <div id="detalleVentaContenido"></div>
+        </div>
+    </div>
+
+    <!-- Modal para Productos -->
+    <div id="productoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeProductModal()">&times;</span>
+            <h2 id="modalTitle">Nuevo Producto</h2>
+            <form id="productoForm" class="product-form">
+                <input type="hidden" id="productoId">
+
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio:</label>
+                    <input type="number" id="precio" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="stock">Stock (5-20):</label>
+                    <input type="number"  class="form-control" min="5" max="20" required>
+                    <small>El stock mínimo es 5 y el máximo es 20</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen">URL de la imagen:</label>
+                    <input type="text" id="imagen" class="form-control" required>
+                    <div class="img-preview">
+                        <img id="imagenPreview" src="" alt="Preview" style="max-width: 100%; display: none;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="categoria">Categoría:</label>
+                    <select id="categoria" class="form-control" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="golden">Golden Collection</option>
+                        <option value="silver">Silver Collection</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" class="form-control" required></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">Guardar Producto</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Actualizar Stock -->
+    <div id="stockModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeStockModal()">&times;</span>
+            <h2>Actualizar Stock</h2>
+            <form id="stockForm" class="product-form">
+                <input type="hidden" id="stockProductoId">
+
+                <div class="form-group">
+                    <h3 id="stockProductoNombre">_</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="stockCantidad">Cantidad en stock (5-20):</label>
+                    <input type="number" id="stockCantidad" class="form-control" min="5" max="20" required>
+                    <small>El stock mínimo es 5 y el máximo es 20</small>
+                </div>
+
+                <button type="submit" class="btn-submit">Actualizar Stock</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Ver Producto -->
+    <div id="verProductoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeVerProductoModal()">&times;</span>
+            <h2>Detalles del Producto</h2>
+            <div id="productoDetalles"></div>
+        </div>
+    </div>
+
+
+
+    <script src="../JavaScript/admin-panel.js"></script>
+</body>
+
+</html>

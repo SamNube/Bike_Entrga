@@ -1,0 +1,43 @@
+# Ignorar la carpeta node_modules
+/node_modules/
+
+# Ignorar archivos de debug de la máquina
+*.log
+*.env
+*.swp
+*.swo
+
+# Ignorar archivos de sistema específicos
+.DS_Store
+Thumbs.db
+
+# Ignorar carpetas y archivos generados por el sistema de test (si los tienes)
+coverage/
+*.lcov
+
+# Ignorar archivos de configuración de IDEs y editores comunes
+.vscode/
+.idea/
+.vs/
+*.sublime-project
+*.sublime-workspace
+.project
+.settings
+.classpath
+.factorypath
+
+# Ignorar archivos de configuración de sistemas de control de versiones
+.svn/
+.hg/
+
+# Ignorar archivos de configuración de sistemas de compilación
+compile_commands.json
+
+# Ignorar archivos de configuración de sistemas de generación de documentación
+Doxyfile
+Doxyfile.bak
+docs/
+
+# Ignorar archivos de configuración de sistemas de generación de paquetes
+package-lock.json
+yarn.lock   

@@ -1,0 +1,258 @@
+    <!DOCTYPE html>
+    <html lang="es">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Bike Store - Nuestra historia y valores corporativos">
+        <title>Bike Store - Nuestra Historia</title>
+        
+        <!-- Favicon y logos -->
+        <link rel="icon" href="../img/logocion.png" type="image/png">
+        
+        <!-- Font Awesome para iconos -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        
+        <!-- Animate.css para animaciones -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+        
+        <!-- AOS (Animate On Scroll) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+        
+        <!-- CSS personalizados -->
+        <link rel="stylesheet" href="../CSS/bike-store-principal.css">
+        <link rel="stylesheet" href="../CSS/favoritos-modal.css">
+        <link rel="stylesheet" href="../CSS/carrito-modal.css">
+
+        <meta name="theme-color" content="#D4AF37">
+    </head>
+
+    <body>
+
+        <!-- Header (usando componente web personalizado) -->
+        <bike-header></bike-header>
+
+        <!-- Hero con video de fondo -->
+        <div class="hero-about">
+            <video autoplay loop muted playsinline class="hero-video">
+                <source src="../videos/bike-promo.mp4.mp4" type="video/mp4">
+            </video>
+            <div class="hero-content animate__animated animate__fadeIn">
+                <h1>Bienvenido a <span class="gold-text">Bike Store</span></h1>
+                <p class="hero-text">Pasión y dedicación desde 2005</p>
+            </div>
+        </div>
+
+        <!-- Sección Historia de la Empresa -->
+        <section class="container py-5" data-aos="fade-up">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2 class="mb-4">Nuestra Trayectoria</h2>
+                    <p>Fundada en 2005 por un grupo de apasionados emprendedores, Bike Store nació con una visión clara: 
+                    crear una empresa que combinara innovación, excelencia y compromiso con la comunidad.</p>
+                    <p>Comenzando con una pequeña tienda en el centro de la ciudad, hemos crecido hasta convertirnos en 
+                    una referencia del sector, manteniendo siempre nuestros valores fundamentales y el espíritu que nos caracteriza.</p>
+                    <p>A lo largo de estos años, hemos superado numerosos desafíos y celebrado incontables éxitos, siempre de la mano 
+                    de nuestros clientes y colaboradores, quienes han sido parte fundamental de nuestra historia.</p>
+                </div>
+                <div class="col-md-6">
+                    <img src="https://i.blogs.es/f6e23b/the-spheres-amazon-7/650_1200.jpg" alt="Sede central de Bike Store" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </section>
+
+    
+
+        <!-- Nuestro Equipo -->
+        <section class="container py-5" data-aos="fade-up">
+            <h2 class="text-center mb-5">Nuestro Equipo Directivo</h2>
+            
+            <div class="row">
+                <div class="col-md-4 mb-4" data-aos="zoom-in">
+                    <div class="team-card text-center p-4 border rounded shadow-sm">
+                        <img src="https://media.cnn.com/api/v1/images/stellar/prod/michael-jackson.jpg?q=w_1110,c_fill" alt="CEO" class="img-fluid rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+                        <h3 class="mb-1">Alejandro Mendoza</h3>
+                        <p class="text-muted">CEO & Fundador</p>
+                        <p>Con más de 20 años de experiencia en el sector, Alejandro ha liderado la visión estratégica de la empresa desde su fundación.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="team-card text-center p-4 border rounded shadow-sm">
+                        <img src="https://media.revistavanityfair.es/photos/60e83f2664a1ecf164d069ea/master/w_1600%2Cc_limit/177480.jpg" alt="CTO" class="img-fluid rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+                        <h3 class="mb-1">Laura Gutiérrez</h3>
+                        <p class="text-muted">Directora de Tecnología</p>
+                        <p>Laura ha revolucionado nuestros procesos tecnológicos y lidera todos los proyectos de innovación de la compañía.</p>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="team-card text-center p-4 border rounded shadow-sm">
+                        <img src="https://resizer.glanacion.com/resizer/v2/tom-hiddleston-explico-por-que-se-alejo-de-la-UAHOXZTDJRFOFBB2VLMXFJQUVE.JPG?auth=88f8f5f052623d146cf52bb3d4a94469811c2921bedbe30ae094d7374fe4730f&width=1200&quality=70&smart=false&height=801" alt="COO" class="img-fluid rounded-circle mb-3" style="width: 180px; height: 180px; object-fit: cover;">
+                        <h3 class="mb-1">Carlos Vega</h3>
+                        <p class="text-muted">Director de Operaciones</p>
+                        <p>Con su visión estratégica, Carlos ha optimizado todas nuestras operaciones y procesos internos para maximizar la eficiencia.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Misión, Visión y Valores -->
+        <section class="bg-light py-5" data-aos="fade-up">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="value-card h-100 p-4 border rounded bg-white shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="value-icon me-3">
+                                    <i class="fas fa-compass fa-2x" style="color: #D4AF37;"></i>
+                                </div>
+                                <h3>Misión</h3>
+                            </div>
+                            <p>Nuestra misión es proporcionar experiencias excepcionales a través de productos innovadores y servicios de alta calidad, manteniendo siempre un compromiso con la excelencia y la satisfacción total del cliente.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="value-card h-100 p-4 border rounded bg-white shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="value-icon me-3">
+                                    <i class="fas fa-eye fa-2x" style="color: #D4AF37;"></i>
+                                </div>
+                                <h3>Visión</h3>
+                            </div>
+                            <p>Aspiramos a ser reconocidos globalmente como líderes en innovación y excelencia, marcando nuevos estándares en la industria y creando un impacto positivo en nuestras comunidades y en el medio ambiente.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="value-card h-100 p-4 border rounded bg-white shadow-sm">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="value-icon me-3">
+                                    <i class="fas fa-heart fa-2x" style="color: #D4AF37;"></i>
+                                </div>
+                                <h3>Valores</h3>
+                            </div>
+                            <ul>
+                                <li><strong>Integridad:</strong> Actuamos con honestidad y transparencia en todo lo que hacemos.</li>
+                                <li><strong>Innovación:</strong> Buscamos constantemente nuevas formas de mejorar y crear valor.</li>
+                                <li><strong>Compromiso:</strong> Nos dedicamos plenamente a cumplir nuestras promesas.</li>
+                                <li><strong>Sostenibilidad:</strong> Trabajamos para un futuro mejor y más sostenible.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Responsabilidad Social -->
+        <section class="container py-5" data-aos="fade-up">
+            <h2 class="text-center mb-5">Responsabilidad Social</h2>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <img src="https://www.santelmo.org/thumbnail_image_santelmo_600x300x95x1_3385.jpg" alt="Iniciativas comunitarias" class="img-fluid rounded shadow mb-3">
+                    <h3>Compromiso con la Comunidad</h3>
+                    <p>Creemos firmemente en devolver a la comunidad que nos ha apoyado durante tantos años. Nuestros programas de responsabilidad social incluyen iniciativas educativas, apoyo a organizaciones locales y voluntariado corporativo.</p>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <img src="https://realestatemarket.com.mx/images/2022/04-abril/3004/Apruebanconstruccion-torreespiral-AmazonHQ2-Virginia-p.jpg" alt="Sostenibilidad ambiental" class="img-fluid rounded shadow mb-3">
+                    <h3>Sostenibilidad Ambiental</h3>
+                    <p>Nuestro compromiso con el planeta se refleja en cada aspecto de nuestras operaciones. Desde la implementación de energías renovables en nuestras instalaciones hasta la reducción de nuestra huella de carbono, trabajamos constantemente para minimizar nuestro impacto ambiental.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Premios y Reconocimientos -->
+        <section class="bg-light py-5" data-aos="fade-up">
+            <div class="container">
+                <h2 class="text-center mb-5">Premios y Reconocimientos</h2>
+                
+                <div class="row justify-content-center">
+                    <div class="col-md-10">
+                        <div class="awards-timeline">
+                            <div class="award-item" data-aos="fade-right">
+                                <div class="award-icon">
+                                    <i class="fas fa-trophy" style="color: #D4AF37;"></i>
+                                </div>
+                                <div class="award-content">
+                                    <h3>Premio a la Innovación Empresarial</h3>
+                                    <p class="award-year">2022</p>
+                                    <p>Reconocimiento por nuestras soluciones innovadoras y contribución al desarrollo tecnológico del sector.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="award-item" data-aos="fade-left">
+                                <div class="award-icon">
+                                    <i class="fas fa-medal" style="color: #D4AF37;"></i>
+                                </div>
+                                <div class="award-content">
+                                    <h3>Empresa del Año</h3>
+                                    <p class="award-year">2020</p>
+                                    <p>Otorgado por la Cámara de Comercio por nuestro crecimiento sostenido y contribución a la economía local.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="award-item" data-aos="fade-right">
+                                <div class="award-icon">
+                                    <i class="fas fa-award" style="color: #D4AF37;"></i>
+                                </div>
+                                <div class="award-content">
+                                    <h3>Certificación ISO 9001</h3>
+                                    <p class="award-year">2018</p>
+                                    <p>Reconocimiento a nuestros sistemas de gestión de calidad y procesos optimizados.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="award-item" data-aos="fade-left">
+                                <div class="award-icon">
+                                    <i class="fas fa-leaf" style="color: #D4AF37;"></i>
+                                </div>
+                                <div class="award-content">
+                                    <h3>Sello Verde de Sostenibilidad</h3>
+                                    <p class="award-year">2017</p>
+                                    <p>Por nuestras prácticas sostenibles y compromiso con la reducción del impacto ambiental.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto Corporativo -->
+    
+
+        <!-- footer -->
+        <bike-footer></bike-footer>
+        <!-- Scripts necesarios -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+        
+        <!-- Scripts personalizados -->
+        <script src="../components/bike-header.js"></script>
+        <script src="../components/bike-footer.js"></script>
+        <script src="../JavaScript/bike-store-principal.js"></script>
+        <script src="../JavaScript/conexion-login.js"></script>
+        <script src="../JavaScript/carrito-modal.js" ></script>
+        <script src="../JavaScript/search.js" defer></script>
+
+        <!-- Inicialización de bibliotecas -->
+        <script>
+            // Inicializar AOS (Animate On Scroll)
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+            
+            // Código para el formulario de contacto
+            document.getElementById('contactForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Gracias por su mensaje. Nos pondremos en contacto con usted a la brevedad.');
+                this.reset();
+            });
+        </script>
+    </body>
+
+    </html>

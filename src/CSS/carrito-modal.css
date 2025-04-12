@@ -1,0 +1,536 @@
+ /* Estilos para el modal */
+ .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-contenido {
+    background-color: var(--fondo-tarjeta);
+    margin: 10% auto;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-encabezado {
+    background-color: var(--fondo-barra);
+    color: var(--color-primario);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--color-primario);
+}
+
+.modal-encabezado h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cerrar-modal {
+    color: var(--color-primario);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.cerrar-modal:hover {
+    color: #ff4d6d;
+}
+
+.modal-cuerpo {
+    padding: 20px;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.mensaje-vacio {
+    text-align: center;
+    padding: 30px;
+    color: #888;
+}
+
+.mensaje-vacio i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    color: #aaa;
+}
+
+.modal-pie {
+    padding: 15px 20px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.boton-primario {
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.boton-secundario {
+    background-color: #f1f1f1;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.boton-primario:hover {
+    background-color: var(--hover-boton);
+}
+
+.boton-secundario:hover {
+    background-color: #e5e5e5;
+}
+
+
+
+.btn-agregar-carrito {
+    background-color: var(--color-primario);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.btn-agregar-carrito:hover {
+    background-color: var(--hover-boton);
+}
+
+/* Estilos responsivos */
+@media screen and (max-width: 768px) {
+    .modal-contenido {
+        margin: 15% auto;
+        width: 95%;
+    }
+    
+}
+
+@media screen and (max-width: 480px) {
+    
+    .modal-encabezado h2 {
+        font-size: 1.2rem;
+    }
+}
+
+
+
+
+/* Estilos para el Modal del Carrito */
+.lista-carrito {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.item-carrito {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.item-carrito img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.item-carrito .info-producto {
+    flex-grow: 1;
+}
+
+.item-carrito h4 {
+    margin: 0 0 5px 0;
+    color: #2C2C2C;
+    font-size: 16px;
+}
+
+.item-carrito .precio-producto {
+    margin: 0;
+    color: #2C2C2C;
+    font-weight: bold;
+}
+
+.item-carrito .controles-carrito {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.cantidad-control button {
+    width: 25px;
+    height: 25px;
+    background: #2C2C2C;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cantidad-control span {
+    margin: 0 8px;
+    font-weight: bold;
+}
+
+.eliminar-producto {
+    color: #ff4444;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+}
+
+.resumen-carrito {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #ddd;
+}
+
+.total-carrito {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#proceder-compra {
+    margin-right: 5px;
+}
+
+#mensaje-carrito-vacio {
+    text-align: center;
+    padding: 30px;
+    color: #888;
+}
+
+#mensaje-carrito-vacio i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+
+
+/* Estilos para notificaciones */
+.notificacion {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #2C2C2C;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s, transform 0.3s;
+    font-weight: 500;
+}
+
+.notificacion.mostrar {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Estilos para botones del añadir al carrito */
+.agregar-carrito {
+    background-color: #D4AF37;
+    color: #2C2C2C;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 5px;
+    transition: background-color 0.3s;
+}
+
+
+#cartCounter {
+    display: inline-block;
+    text-align: center;
+    line-height: 20px; /* Esto debe coincidir con la altura del elemento */
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #D4AF37;
+    color: #2C2C2C;
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    padding: 0; /* Eliminar cualquier padding que pueda estar desplazando el contenido */
+  }
+
+  .modal-factura {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .factura {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .factura-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+  }
+  
+  .factura-header h2 {
+    margin-top: 0;
+    color: #333;
+  }
+  
+  .factura table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+  }
+  
+  .factura th, .factura td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .factura th {
+    background-color: #f8f8f8;
+  }
+  
+  .factura-footer {
+    margin-top: 20px;
+    text-align: center;
+  }
+  
+  .factura-footer button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .factura-footer button#cerrar-factura {
+    background-color: #f44336;
+  }
+  
+  .notificacion.success {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .modal-confirmacion {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100; /* Mayor que otros modales */
+  }
+  
+  .confirmacion-compra {
+    background-color: white;
+    border-radius: 8px;
+    padding: 25px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .confirmacion-compra h2 {
+    margin-top: 0;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .botones-confirmacion {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+  }
+  
+  .btn-primario {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .btn-secundario {
+    background-color: #f44336;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .btn-primario:hover {
+    background-color: #45a049;
+  }
+  
+  .btn-secundario:hover {
+    background-color: #d32f2f;
+  }
+
+
+    .modal-confirmacion {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1100; /* Mayor que otros modales */
+    }
+    
+    .confirmacion-compra {
+      background-color: white;
+      border-radius: 8px;
+      padding: 25px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    .confirmacion-compra h2 {
+      margin-top: 0;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    
+    .botones-confirmacion {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 25px;
+    }
+    
+    .btn-primario {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+    
+    .btn-secundario {
+      background-color: #f44336;
+      border: none;
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    
+    .btn-primario:hover {
+      background-color: #45a049;
+    }
+    
+    .btn-secundario:hover {
+      background-color: #d32f2f;
+    }

@@ -1,0 +1,184 @@
+/* Estilos generales del cuerpo */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(150deg, #5a5a5a, #000000); /* Gradiente más contrastado */
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenedor principal del formulario */
+.formulario {
+    width: 90%;
+    max-width: 400px; /* Mejor responsividad */
+    background: #2C2C2C;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px #D4AF37;
+    padding: 30px 20px;
+    color: #fff;
+    position: relative;
+}
+
+/* Estilo del título */
+.formulario h1 {
+    text-align: center;
+    padding: 0 0 20px 0;
+    border-bottom: 1px solid #FFFFFF;
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+/* Contenedor del formulario */
+.formulario form {
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+
+/* Grupos de inputs (email y contraseña) */
+form .email, form .contrasena {
+    position: relative;
+    margin: 35px 0;
+    overflow: visible; /* Previene recorte de etiquetas */
+}
+
+/* Estilos comunes para inputs */
+.email input, .contrasena input {
+    width: 100%;
+    padding: 12px 5px;
+    height: 45px;
+    font-size: 16px;
+    border: none;
+    border-bottom: 2px solid #FFFFFF;
+    background: transparent;
+    outline: none;
+    color: #fff;
+    transition: border-color 0.3s ease;
+}
+
+/* Efecto focus en inputs */
+.email input:focus, .contrasena input:focus {
+    border-bottom-color: #D4AF37; /* Borde dorado al enfocar */
+}
+
+/* Etiquetas flotantes */
+.email label, .contrasena label {
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    color: #FFFFFF;
+    transform: translateY(-20%);
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.3s ease all;
+    z-index: 1; /* Coloca las etiquetas sobre el borde */
+}
+
+/* Animación y estilo de etiquetas cuando suben */
+.email input:focus ~ label,
+.email input:not(:placeholder-shown) ~ label,
+.contrasena input:focus ~ label,
+.contrasena input:not(:placeholder-shown) ~ label {
+    top: -4px; /* Posición más alta */
+    font-size: 12px;
+    color: #D4AF37;
+    background: #2C2C2C; /* Fondo para cubrir el borde */
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+/* Enlace "Olvidó contraseña" */
+.recordar {
+    text-align: right;
+    margin: 20px 0;
+    color: #FFFFFF;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.recordar:hover {
+    text-decoration: underline;
+    color: #D4AF37;
+}
+
+/* Estilos para botones */
+input[type="submit"],
+.boton-volver {
+    width: 100%;
+    height: 45px;
+    border: none;
+    background: #D4AF37;
+    color: #14202E;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    text-align: center;
+    line-height: 45px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Efecto hover para botones */
+input[type="submit"]:hover,
+.boton-volver:hover {
+    background: #c5a641;
+    transform: translateY(-2px); /* Efecto de elevación */
+}
+
+/* Sección de registro */
+.Registrarse {
+    text-align: center;
+    margin-top: 25px;
+    color: rgba(245, 245, 245, 0.507);
+    font-size: 14px;
+    padding: 10px 0;
+}
+
+.Registrarse a {
+    color:  rgba(245, 245, 245, 0.877);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.Registrarse a:hover {
+    color: #D4AF37;
+    text-decoration: underline;
+}
+
+@media (max-width: 1350px) {
+    .formulario {
+        width: 100%;
+        padding: 90px 60px;
+    }
+    
+    .formulario h1 {
+        font-size: 30px;
+    }
+    
+    .email input, .contrasena input {
+        font-size: 30px;
+    }
+}
+/* Media queries para responsividad */
+@media (max-width: 768px) {
+    .formulario {
+        width: 100%;
+        padding: 20px 10px;
+    }
+    
+    .formulario h1 {
+        font-size: 30px;
+    }
+    
+    .email input, .contrasena input {
+        font-size: 30px;
+    }
+}
+
+
