@@ -539,8 +539,12 @@ async function generarReporteVentas() {
 
         const productosNombres = detalles.map(d => d.nombre).join(', ');
         const totalUnidades = detalles.reduce((sum, d) => sum + d.cantidad, 0);
-        // Nuevo: obtener el precio unitario (si hay varios productos, puedes mostrar el primero o un promedio)
         const precioUnitario = detalles.length > 0 ? detalles[0].precio_unitario : '-';
+
+        // Pasar datos como JSON seguro para el modal
+        const ventaData = encodeURIComponent(JSON.stringify(venta));
+        const usuarioData = encodeURIComponent(JSON.stringify(usuario));
+        const detallesData = encodeURIComponent(JSON.stringify(detalles));
 
         const fila = document.createElement('tr');
         fila.innerHTML = `
@@ -552,7 +556,9 @@ async function generarReporteVentas() {
             <td>$${precioUnitario}</td>
             <td>$${venta.venta_total}</td>
             <td>
-                
+                <button class="btn-view" onclick="verDetalleVenta('${ventaData}','${usuarioData}','${detallesData}')">
+                    <i class="fas fa-eye"></i> Ver Detalles
+                </button>
             </td>
         `;
         tabla.appendChild(fila);
@@ -562,81 +568,109 @@ async function generarReporteVentas() {
     await cargarProductosMasVendidosPorHistorial();
 }
 
-// Nueva función: Productos más vendidos siguiendo la lógica del historial de ventas
-async function cargarProductosMasVendidosPorHistorial() {
-    const fechaInicio = document.getElementById('fechaInicio').value;
-    const fechaFin = document.getElementById('fechaFin').value;
-    let url = `${API_URL}/ventas/filtrar?`;
-    if (fechaInicio) url += `fechaInicio=${fechaInicio}&`;
-    if (fechaFin) url += `fechaFin=${fechaFin}&`;
-
-    // Obtener ventas filtradas
-    const res = await fetch(url);
-    const ventas = await res.json();
-
-    // Acumulador de productos vendidos
-    const productosVendidos = {};
-
-    // Recorrer ventas y acumular productos vendidos
-    for (const venta of ventas) {
-        const detalleRes = await fetch(`${API_URL}/detalle_venta/${venta.id}`);
-        const detalles = await detalleRes.json();
-
-        detalles.forEach(d => {
-            if (!productosVendidos[d.id_producto]) {
-                productosVendidos[d.id_producto] = {
-                    id: d.id_producto,
-                    nombre: d.nombre,
-                    descripcion: d.descripcion || '',
-                    imagen: d.imagen || '',
-                    total_vendido: 0,
-                    total: 0,
-                    precio: d.precio_unitario
-                };
-            }
-            productosVendidos[d.id_producto].total_vendido += d.cantidad;
-            productosVendidos[d.id_producto].total += d.cantidad * d.precio_unitario;
-        });
-    }
-
-    // Convertir a array y ordenar
-    const productosArray = Object.values(productosVendidos);
-    productosArray.sort((a, b) => b.total_vendido - a.total_vendido);
-
-    // Renderizar tabla
-    const contenedor = document.getElementById('productos-mas-vendidos');
-    contenedor.innerHTML = `
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Producto</th>
-                    <th></th>
-                    <th>Unidades vendidas</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                ${
-                    productosArray.length === 0
-                    ? `<tr><td colspan="5" style="text-align:center;">No hay productos vendidos en este periodo.</td></tr>`
-                    : productosArray.map(p => `
-                        <tr>
-                            <td>${p.id}</td>
-                            <td>
-                                <img src="${p.imagen}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:contain;border-radius:5px;margin-right:8px;vertical-align:middle;">
-                                ${p.nombre}
-                            </td>
-                            <td>${p.descripcion}</td>
-                            <td>${p.total_vendido}</td>
-                            <td>$${parseFloat(p.total).toFixed(2)}</td>
-                        </tr>
-                    `).join('')
-                }
-            </tbody>
-        </table>
+// Modal para ver detalles de venta
+function crearModalDetalleVenta() {
+    if (document.getElementById('detalleVentaModal')) return; // Ya existe
+    const modal = document.createElement('div');
+    modal.id = 'detalleVentaModal';
+    modal.className = 'modal';
+    modal.innerHTML = `
+        <div class="modal-content" id="detalleVentaContenido" style="max-width:600px; position:relative;"></div>
     `;
+    document.body.appendChild(modal);
+    // Cerrar al hacer click fuera del contenido
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) cerrarDetalleVentaModal();
+    });
 }
+
+function cerrarDetalleVentaModal() {
+    const modal = document.getElementById('detalleVentaModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function verDetalleVenta(ventaStr, usuarioStr, detallesStr) {
+    crearModalDetalleVenta();
+    const modal = document.getElementById('detalleVentaModal');
+    const contenido = document.getElementById('detalleVentaContenido');
+    contenido.innerHTML = '<div style="padding:30px;text-align:center;">Cargando...</div>';
+    modal.style.display = 'block';
+    try {
+        const venta = JSON.parse(decodeURIComponent(ventaStr));
+        const usuario = JSON.parse(decodeURIComponent(usuarioStr));
+        const detalles = JSON.parse(decodeURIComponent(detallesStr));
+        let productosHtml = await Promise.all(detalles.map(async d => {
+            let imagen = d.imagen;
+            let descripcion = d.descripcion;
+            // Si no hay imagen o descripción, intenta buscar en el catálogo (activos o inactivos)
+            if (!imagen || !descripcion) {
+                let prod = productos.find(p => p.id == d.id_producto);
+                if (!prod) {
+                    // Buscar en la API aunque esté inactivo
+                    try {
+                        const res = await fetch(`${API_URL}/productos/${d.id_producto}`);
+                        if (res.ok) prod = await res.json();
+                    } catch {}
+                }
+                if (!imagen && prod && prod.imagen) imagen = prod.imagen;
+                if ((!descripcion || descripcion === '') && prod && prod.descripcion) descripcion = prod.descripcion;
+            }
+            return `
+            <tr>
+                <td>
+                    <div style="display:flex;align-items:center;gap:12px;min-width:200px;">
+                        <img src="${imagen || ''}" alt="${d.nombre}" style="width:48px;height:48px;object-fit:cover;border-radius:6px;background:#f5f5f5;" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/2748/2748558.png';">
+                        <div style="text-align:left;">
+                            <div style="font-weight:600;font-size:15px;line-height:1.2;">${d.nombre}</div>
+                            <div style="font-size:12px;color:#666;max-width:220px;white-space:normal;word-break:break-word;">${descripcion || '<span style=\'color:#bbb\'>(Sin descripción)</span>'}</div>
+                        </div>
+                    </div>
+                </td>
+                <td>${d.cantidad}</td>
+                <td>$${parseFloat(d.precio_unitario).toFixed(2)}</td>
+                <td>$${(d.cantidad * d.precio_unitario).toFixed(2)}</td>
+            </tr>
+            `;
+        }));
+        contenido.innerHTML = `
+            <span class="close-modal" style="position:absolute;top:10px;right:20px;font-size:2rem;cursor:pointer;" onclick="cerrarDetalleVentaModal()">&times;</span>
+            <h2 style="margin-bottom:10px;">Detalle de Venta #${venta.id}</h2>
+            <div style="margin-bottom:10px;"><strong>Cliente:</strong> ${usuario ? usuario.nombre + ' ' + usuario.apellido : 'Desconocido'}</div>
+            <div style="margin-bottom:10px;"><strong>Fecha:</strong> ${formatearFecha(venta.fecha_venta)}</div>
+            <div style="margin-bottom:10px;"><strong>Total:</strong> $${venta.venta_total}</div>
+            <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+                <thead>
+                    <tr style="background:#f5f5f5;">
+                        <th style="text-align:left;">Producto / Descripción</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${productosHtml.join('')}
+                </tbody>
+            </table>
+        `;
+    } catch (err) {
+        contenido.innerHTML = '<div style="padding:30px;text-align:center;color:red;">Error al cargar detalles de la venta.</div>';
+    }
+}
+
+// Estilos para el modal de detalle de venta
+(function(){
+    const style = document.createElement('style');
+    style.innerHTML = `
+    .modal { display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; overflow:auto; background:rgba(0,0,0,0.4); }
+    .modal-content { background:#fff; margin:60px auto; padding:30px 20px 20px 20px; border-radius:10px; box-shadow:0 2px 16px rgba(0,0,0,0.2); position:relative; }
+    .modal-content table th, .modal-content table td { padding:8px 6px; border-bottom:1px solid #eee; text-align:center; }
+    .modal-content table th { background:#f5f5f5; }
+    .close-modal { color:#888; font-weight:bold; transition:color 0.2s; }
+    .close-modal:hover { color:#e53935; }
+    @media (max-width:700px) { .modal-content { width:95vw !important; padding:10px; } }
+    `;
+    document.head.appendChild(style);
+})();
 
 // Función para cargar productos más vendidos
 async function cargarProductosMasVendidos() {
@@ -728,4 +762,79 @@ function formatearFecha(fechaISO) {
     const mes = String(fecha.getMonth() + 1).padStart(2, '0');
     const anio = fecha.getFullYear();
     return `${dia}/${mes}/${anio}`;
+}
+
+// Productos más vendidos por historial de ventas (filtro por fechas)
+async function cargarProductosMasVendidosPorHistorial() {
+    const fechaInicio = document.getElementById('fechaInicio').value;
+    const fechaFin = document.getElementById('fechaFin').value;
+    let url = `${API_URL}/ventas/filtrar?`;
+    if (fechaInicio) url += `fechaInicio=${fechaInicio}&`;
+    if (fechaFin) url += `fechaFin=${fechaFin}&`;
+
+    // Obtener ventas filtradas
+    const res = await fetch(url);
+    const ventas = await res.json();
+
+    // Acumulador de productos vendidos
+    const productosVendidos = {};
+
+    // Recorrer ventas y acumular productos vendidos
+    for (const venta of ventas) {
+        const detalleRes = await fetch(`${API_URL}/detalle_venta/${venta.id}`);
+        const detalles = await detalleRes.json();
+        detalles.forEach(d => {
+            if (!productosVendidos[d.id_producto]) {
+                productosVendidos[d.id_producto] = {
+                    id: d.id_producto,
+                    nombre: d.nombre,
+                    descripcion: d.descripcion || '',
+                    imagen: d.imagen || '',
+                    total_vendido: 0,
+                    total: 0,
+                    precio: d.precio_unitario
+                };
+            }
+            productosVendidos[d.id_producto].total_vendido += d.cantidad;
+            productosVendidos[d.id_producto].total += d.cantidad * d.precio_unitario;
+        });
+    }
+
+    // Convertir a array y ordenar
+    const productosArray = Object.values(productosVendidos);
+    productosArray.sort((a, b) => b.total_vendido - a.total_vendido);
+
+    // Renderizar tabla
+    const contenedor = document.getElementById('productos-mas-vendidos');
+    contenedor.innerHTML = `
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Descripción</th>
+                    <th>Unidades vendidas</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${
+                    productosArray.length === 0
+                    ? `<tr><td colspan="5" style="text-align:center;">No hay productos vendidos en este periodo.</td></tr>`
+                    : productosArray.map(p => `
+                        <tr>
+                            <td>${p.id}</td>
+                            <td>
+                                <img src="${p.imagen}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:contain;border-radius:5px;margin-right:8px;vertical-align:middle;">
+                                ${p.nombre}
+                            </td>
+                            <td>${p.descripcion}</td>
+                            <td>${p.total_vendido}</td>
+                            <td>$${parseFloat(p.total).toFixed(2)}</td>
+                        </tr>
+                    `).join('')
+                }
+            </tbody>
+        </table>
+    `;
 }
