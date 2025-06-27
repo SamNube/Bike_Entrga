@@ -396,6 +396,15 @@ textarea.form-control {
     border-radius: 8px;
 }
 
+.producto-vendido.destacado {
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    transition: transform 0.2s;
+}
+
+.producto-vendido.destacado:hover {
+    transform: scale(1.02);
+}
+
 .producto-rank {
     font-size: 24px;
     font-weight: bold;
@@ -596,6 +605,23 @@ textarea.form-control {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+}
+
+.producto-imagen-grande {
+    width: 140px !important;
+    height: 140px !important;
+    background: #fff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.producto-imagen-grande img {
+    max-width: 120px;
+    max-height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: #fff;
 }
 
 @media (max-width: 768px) {

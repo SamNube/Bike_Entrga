@@ -16,7 +16,7 @@
             border-radius: 4px;
             font-weight: bold;
         }
-
+        
         .stock-normal {
             color: #fff;
             background-color: #4CAF50;
@@ -34,7 +34,7 @@
             align-items: center;
             justify-content: space-between;
         }
-
+        
         .stock-alert-container {
             margin-bottom: 20px;
             max-height: 200px;
@@ -48,6 +48,11 @@
             padding: 3px 8px;
             border-radius: 3px;
             cursor: pointer;
+        }
+
+        .letras-regitro-stock{
+            font-size: 12px;
+            color: #4CAF50;
         }
     </style>
 </head>
@@ -75,11 +80,15 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Historial de ventas</span>
                 </li>
+                <li onclick="showSection('clientes')">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </li>
                 <li onclick="cerrarSesion()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar sesión</span>
                 </li>
-
+                
             </ul>
         </div>
 
@@ -105,37 +114,35 @@
                     </div>
                 </div>
 
+    
+    <!-- Tabla de Ventas -->
+    <div class="report-section">
+        <h2>Historial de Ventas</h2>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID Venta</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Productos</th>
+                    <th>Unidades</th>
+                    <th>Precio Unitario</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="reporte-ventas-tabla">
+                <!-- Aquí se cargarán las ventas dinámicamente -->
+            </tbody>
+        </table>
+    </div>
 
-                <!-- Tabla de Ventas -->
-                <div class="report-section">
-                    <h2>Historial de Ventas</h2>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID Venta</th>
-                                <th>Fecha</th>
-                                <th>Cliente</th>
-                                <th>Email</th>
-                                <th>Productos</th>
-                                <th>Unidades</th>
-                                <th>Total</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reporte-ventas-tabla">
-                            <!-- Aquí se cargarán las ventas dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Productos Más Vendidos -->
-                <div class="report-section">
-                    <h2>Productos Más Vendidos</h2>
-                    <div class="top-products" id="productos-mas-vendidos">
-                        <!-- Aquí se cargarán los productos más vendidos -->
-                    </div>
-                </div>
-            </div>
+    <!-- Productos Más Vendidos -->
+    <div class="report-section">
+        <h2>Productos Más Vendidos</h2>
+        <div class="top-products" id="productos-mas-vendidos"></div>
+    </div>
+</div>
 
 
             <!-- Productos Section -->
@@ -170,11 +177,11 @@
                 <div class="page-header">
                     <h1>Gestión de Stock</h1>
                 </div>
-
+                
                 <div class="stock-alert-container" id="stockAlerts">
                     <!-- Las alertas de stock bajo se mostrarán aquí -->
                 </div>
-
+                
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -190,17 +197,25 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Clientes Section -->
+            <div class="section" id="clientes">
+                <div class="page-header">
+                    <h1>Gestión de Clientes</h1>
+                </div>
+                <p>Esta sección está en desarrollo.</p>
+            </div>
         </div>
     </div>
 
-    <!-- Modal para Detalle de Venta -->
-    <div id="detalleVentaModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close-modal" onclick="cerrarDetalleVentaModal()">&times;</span>
-            <div id="detalleVentaContenido"></div>
-        </div>
+<!-- Modal para Detalle de Venta -->
+<div id="detalleVentaModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <span class="close-modal" onclick="cerrarDetalleVentaModal()">&times;</span>
+        <div id="detalleVentaContenido"></div>
     </div>
-
+</div>
+    
     <!-- Modal para Productos -->
     <div id="productoModal" class="modal">
         <div class="modal-content">
@@ -209,25 +224,28 @@
             <form id="productoForm" class="product-form">
                 <input type="hidden" id="productoId">
 
+               
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" class="form-control" required>
+                    <input type="text" id="nombre" class="form-control" pattern="^[^0-9]+$" required>
                 </div>
 
                 <div class="form-group">
                     <label for="precio">Precio:</label>
-                    <input type="number" id="precio" class="form-control" required>
+                    <input type="number" id="precio" class="form-control" min="0" maxlength="10"  onkeypress="return event.charCode >= 48 && event.charCode <= 57"    required >
                 </div>
+                
 
-                <div class="form-group">
-                    <label for="stock">Stock (5-20):</label>
-                    <input type="number"  class="form-control" min="5" max="20" required>
-                    <small>El stock mínimo es 5 y el máximo es 20</small>
+
+                <div class="form-group" >
+                    <label class="letras-regitro-stock" for="stock"> El Stock por Default de cada producto es de (10)
+                        para modificar Stock dirijase al apartado de Gestión de Stock
+                    </label>
                 </div>
 
                 <div class="form-group">
                     <label for="imagen">URL de la imagen:</label>
-                    <input type="text" id="imagen" class="form-control" required>
+                    <input type="text" id="imagen" class="form-control"  pattern="https?://.+" title="Ingrese una URL válida (ej: https://www.ejemplo.com)" required minlength="8" maxlength="200" required>
                     <div class="img-preview">
                         <img id="imagenPreview" src="" alt="Preview" style="max-width: 100%; display: none;">
                     </div>
@@ -259,32 +277,30 @@
             <h2>Actualizar Stock</h2>
             <form id="stockForm" class="product-form">
                 <input type="hidden" id="stockProductoId">
-
-                <div class="form-group">
-                    <h3 id="stockProductoNombre">_</h3>
+                
+                 <div class="form-group">
+                    <h3 id="stockProductoNombre"></h3>
                 </div>
-
+                
                 <div class="form-group">
                     <label for="stockCantidad">Cantidad en stock (5-20):</label>
                     <input type="number" id="stockCantidad" class="form-control" min="5" max="20" required>
                     <small>El stock mínimo es 5 y el máximo es 20</small>
                 </div>
-
                 <button type="submit" class="btn-submit">Actualizar Stock</button>
             </form>
         </div>
     </div>
 
     <!-- Modal para Ver Producto -->
-    <div id="verProductoModal" class="modal">
-        <div class="modal-content">
+    <div id="verProductoModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width:600px;">
             <span class="close-modal" onclick="closeVerProductoModal()">&times;</span>
-            <h2>Detalles del Producto</h2>
             <div id="productoDetalles"></div>
         </div>
     </div>
 
-
+    
 
     <script src="../JavaScript/admin-panel.js"></script>
 </body>

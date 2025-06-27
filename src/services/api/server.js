@@ -63,7 +63,7 @@ app.put('/api/usuarios/:id', (req, res) => {
         return res.status(400).json({ message: "Todos los campos son obligatorios" });
     }
 
-    const sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, contrasena = ?, rol = ? WHERE id_usuario = ?";
+    const sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, contrasena = ?, rol = ? WHERE id = ?";
     pool.query(sql, [nombre, apellido, email, contrasena, rol, id], (error, resultado) => {
         if (error) {
             console.error("Error al actualizar usuario:", error);
@@ -76,7 +76,7 @@ app.put('/api/usuarios/:id', (req, res) => {
 // Eliminar usuario
 app.delete('/api/usuarios/:id', (req, res) => {
     const { id } = req.params;
-    const sql = "DELETE FROM usuarios WHERE id_usuario = ?";
+    const sql = "DELETE FROM usuarios WHERE id = ?";
 
     pool.query(sql, [id], (error, resultado) => {
         if (error) {
@@ -105,7 +105,7 @@ app.post('/api/login', (req, res) => {
             const usuario = resultados[0];
             const token = jwt.sign(
                 { 
-                    id: usuario.id_usuario, 
+                    id: usuario.id, 
                     email: usuario.email,
                     nombre: usuario.nombre,
                     rol: usuario.rol
@@ -118,7 +118,7 @@ app.post('/api/login', (req, res) => {
                 message: "Inicio de sesión exitoso",
                 token,
                 usuario: {
-                    id: usuario.id_usuario,
+                    id: usuario.id,
                     nombre: usuario.nombre,
                     apellido: usuario.apellido,
                     email: usuario.email,
@@ -160,7 +160,7 @@ app.get('/api/perfil', verificarToken, (req, res) => {
 // Obtener usuario por ID
 app.get('/api/usuarios/:id', (req, res) => {
     const { id } = req.params;
-    const sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
+    const sql = "SELECT * FROM usuarios WHERE id = ?";
     
     pool.query(sql, [id], (error, resultados) => {
         if (error) {
@@ -228,14 +228,12 @@ app.put('/api/productos/:id', (req, res) => {
 // Eliminar producto
 app.delete('/api/productos/:id', (req, res) => {
     const { id } = req.params;
-    const sql = "DELETE FROM productos WHERE id = ?";
-
-    pool.query(sql, [id], (error, resultado) => {
+    // Eliminación lógica
+    pool.query("UPDATE productos SET activo = 0 WHERE id = ?", [id], (error, resultado) => {
         if (error) {
-            console.error("Error al eliminar producto:", error);
-            return res.status(500).json({ message: "Error al eliminar producto", error });
+            return res.status(500).json({ error: "Error al eliminar el producto" });
         }
-        res.json({ message: "Producto eliminado correctamente" });
+        res.json({ mensaje: "Producto eliminado (lógicamente)" });
     });
 });
 
@@ -282,145 +280,11 @@ app.patch('/api/productos/:id/stock', (req, res) => {
     });
 });
 
-// ==== VENTAS Y DETALLES DE VENTA ====
-
-// Registrar nueva venta con sus detalles
-app.post('/api/ventas', verificarToken, (req, res) => {
-    const { items, total } = req.body;
-    const id_usuario = req.usuario.id;
-    
-    if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ message: "El carrito está vacío o no tiene un formato válido" });
-    }
-    
-    // Iniciar transacción
-    pool.getConnection((err, connection) => {
-        if (err) {
-            console.error("Error al conectar a la base de datos:", err);
-            return res.status(500).json({ message: "Error al conectar a la base de datos", error: err });
-        }
-        
-        connection.beginTransaction(err => {
-            if (err) {
-                connection.release();
-                console.error("Error al iniciar transacción:", err);
-                return res.status(500).json({ message: "Error al procesar la venta", error: err });
-            }
-            
-            // Fecha actual
-            const fecha_actual = new Date().toISOString().split('T')[0];
-            
-            // Insertar en tabla ventas
-            const sqlVenta = "INSERT INTO ventas (id_usuario, fecha_venta, estado_venta, venta_total) VALUES (?, ?, ?, ?)";
-            connection.query(sqlVenta, [id_usuario, fecha_actual, 'Completada', total], (error, resultadoVenta) => {
-                if (error) {
-                    return connection.rollback(() => {
-                        connection.release();
-                        console.error("Error al registrar la venta:", error);
-                        res.status(500).json({ message: "Error al registrar la venta", error });
-                    });
-                }
-                
-                const id_venta = resultadoVenta.insertId;
-                const detallesVenta = [];
-                
-                // Preparar los detalles de venta
-                items.forEach(item => {
-                    detallesVenta.push([
-                        item.id,
-                        id_venta,
-                        item.cantidad,
-                        item.precio
-                    ]);
-                });
-                
-                // Insertar en tabla detalle_venta
-                const sqlDetalle = "INSERT INTO detalle_venta (id_producto, id_venta, cantidad, precio_unitario) VALUES ?";
-                connection.query(sqlDetalle, [detallesVenta], (error, resultadoDetalle) => {
-                    if (error) {
-                        return connection.rollback(() => {
-                            connection.release();
-                            console.error("Error al registrar los detalles de la venta:", error);
-                            res.status(500).json({ message: "Error al registrar los detalles de la venta", error });
-                        });
-                    }
-                    
-                    // Actualizar stock de productos
-                    const actualizacionesStock = items.map(item => {
-                        return new Promise((resolve, reject) => {
-                            const sqlStock = "UPDATE productos SET stock = stock - ? WHERE id = ?";
-                            connection.query(sqlStock, [item.cantidad, item.id], (error, resultado) => {
-                                if (error) {
-                                    reject(error);
-                                } else {
-                                    resolve(resultado);
-                                }
-                            });
-                        });
-                    });
-                    
-                    Promise.all(actualizacionesStock)
-                        .then(() => {
-                            // Confirmar transacción
-                            connection.commit(err => {
-                                if (err) {
-                                    return connection.rollback(() => {
-                                        connection.release();
-                                        console.error("Error al confirmar la transacción:", err);
-                                        res.status(500).json({ message: "Error al confirmar la venta", error: err });
-                                    });
-                                }
-                                
-                                connection.release();
-                                res.json({ 
-                                    message: "Venta registrada correctamente", 
-                                    id_venta, 
-                                    fecha: fecha_actual 
-                                });
-                            });
-                        })
-                        .catch(error => {
-                            return connection.rollback(() => {
-                                connection.release();
-                                console.error("Error al actualizar el stock:", error);
-                                res.status(500).json({ message: "Error al actualizar el stock de productos", error });
-                            });
-                        });
-                });
-            });
-        });
-    });
-});
+// ==== CRUD VENTAS ====
 
 // Obtener todas las ventas
-app.get('/api/ventas', verificarToken, (req, res) => {
-    // Si el usuario es administrador, obtiene todas las ventas
-    // Si es cliente, solo obtiene sus propias ventas
-    const id_usuario = req.usuario.id;
-    const rol = req.usuario.rol;
-    
-    let sql;
-    let params = [];
-    
-    if (rol === 'Administrador') {
-        sql = `
-            SELECT v.*, u.nombre, u.apellido 
-            FROM ventas v 
-            JOIN usuarios u ON v.id_usuario = u.id_usuario 
-            ORDER BY v.fecha_venta DESC
-        `;
-    } else {
-        sql = `
-            SELECT v.*, u.nombre, u.apellido 
-            FROM ventas v 
-            JOIN usuarios u ON v.id_usuario = u.id_usuario 
-            WHERE v.id_usuario = ? 
-            ORDER BY v.fecha_venta DESC
-        `;
-        params = [id_usuario];
-    }
-    
-    pool.query(sql, params, (error, resultados) => {
+app.get('/api/ventas', (req, res) => {
+    pool.query("SELECT * FROM ventas", (error, resultados) => {
         if (error) {
             console.error("Error al obtener ventas:", error);
             return res.status(500).json({ message: "Error al obtener ventas", error });
@@ -429,104 +293,150 @@ app.get('/api/ventas', verificarToken, (req, res) => {
     });
 });
 
-// Obtener detalles de una venta específica
-app.get('/api/ventas/:id', verificarToken, (req, res) => {
-    const { id } = req.params;
-    const id_usuario = req.usuario.id;
-    const rol = req.usuario.rol;
-    
-    // Comprobar si el usuario tiene acceso a esta venta
-    const sqlVerificar = `
-        SELECT id FROM ventas 
-        WHERE id = ? ${rol !== 'Administrador' ? 'AND id_usuario = ?' : ''}
-    `;
-    
-    const paramsVerificar = rol !== 'Administrador' ? [id, id_usuario] : [id];
-    
-    pool.query(sqlVerificar, paramsVerificar, (error, resultadosVerificar) => {
+// Registrar una venta
+app.post('/api/ventas', (req, res) => {
+    const { id_usuario, venta_total, productos } = req.body;
+    const fecha_venta = new Date();
+    const estado_venta = 'Completada';
+
+    if (!id_usuario || !venta_total || !Array.isArray(productos) || productos.length === 0) {
+        return res.status(400).json({ message: "Datos de venta incompletos" });
+    }
+
+    // Insertar en ventas
+    const sqlVenta = "INSERT INTO ventas (id_usuario, fecha_venta, estado_venta, venta_total) VALUES (?, ?, ?, ?)";
+    pool.query(sqlVenta, [id_usuario, fecha_venta, estado_venta, venta_total], (error, resultadoVenta) => {
         if (error) {
-            console.error("Error al verificar acceso a la venta:", error);
-            return res.status(500).json({ message: "Error al verificar acceso a la venta", error });
+            console.error("Error al registrar venta:", error);
+            return res.status(500).json({ message: "Error al registrar venta", error });
         }
-        
-        if (resultadosVerificar.length === 0) {
-            return res.status(403).json({ message: "No tienes permiso para ver esta venta" });
-        }
-        
-        // Obtener detalles de la venta
-        const sql = `
-            SELECT v.*, u.nombre, u.apellido,
-                   dv.id as detalle_id, dv.cantidad, dv.precio_unitario,
-                   p.nombre as producto_nombre, p.imagen as producto_imagen
-            FROM ventas v
-            JOIN usuarios u ON v.id_usuario = u.id_usuario
-            JOIN detalle_venta dv ON v.id = dv.id_venta
-            JOIN productos p ON dv.id_producto = p.id
-            WHERE v.id = ?
-        `;
-        
-        pool.query(sql, [id], (error, resultados) => {
-            if (error) {
-                console.error("Error al obtener detalles de la venta:", error);
-                return res.status(500).json({ message: "Error al obtener detalles de la venta", error });
+        const id_venta = resultadoVenta.insertId;
+
+        // Obtener datos históricos de los productos
+        const ids = productos.map(p => p.id);
+        pool.query("SELECT * FROM productos WHERE id IN (?)", [ids], (err, productosDB) => {
+            if (err) {
+                return res.status(500).json({ message: "Error al obtener productos", error: err });
             }
-            
-            if (resultados.length === 0) {
-                return res.status(404).json({ message: "Venta no encontrada" });
-            }
-            
-            // Formatear los resultados
-            const venta = {
-                id: resultados[0].id,
-                id_usuario: resultados[0].id_usuario,
-                nombre_cliente: `${resultados[0].nombre} ${resultados[0].apellido}`,
-                fecha_venta: resultados[0].fecha_venta,
-                estado_venta: resultados[0].estado_venta,
-                venta_total: resultados[0].venta_total,
-                detalles: resultados.map(item => ({
-                    detalle_id: item.detalle_id,
-                    producto_id: item.id_producto,
-                    producto_nombre: item.producto_nombre,
-                    producto_imagen: item.producto_imagen,
-                    cantidad: item.cantidad,
-                    precio_unitario: item.precio_unitario,
-                    subtotal: item.cantidad * item.precio_unitario
-                }))
-            };
-            
-            res.json(venta);
+            // Mapear productos con sus datos históricos
+            const productosMap = {};
+            productosDB.forEach(p => { productosMap[p.id] = p; });
+
+            const valores = productos.map(p => [
+                p.id,
+                id_venta,
+                p.cantidad,
+                p.precio
+            ]);
+            const sqlDetalle = "INSERT INTO detalle_venta (id_producto, id_venta, cantidad, precio_unitario) VALUES ?";
+            pool.query(sqlDetalle, [valores], (errorDetalle) => {
+                if (errorDetalle) {
+                    console.error("Error al registrar detalle de venta:", errorDetalle);
+                    return res.status(500).json({ message: "Error al registrar detalle de venta", error: errorDetalle });
+                }
+                res.json({ message: "Venta registrada correctamente", id_venta });
+            });
         });
     });
 });
 
-// Actualizar estado de la venta (solo para administradores)
-app.patch('/api/ventas/:id/estado', verificarToken, (req, res) => {
-    const { id } = req.params;
-    const { estado_venta } = req.body;
-    const rol = req.usuario.rol;
-    
-    if (rol !== 'Administrador') {
-        return res.status(403).json({ message: "Solo los administradores pueden cambiar el estado de las ventas" });
+// Obtener ventas por usuario y rango de fechas
+app.get('/api/ventas/filtrar', (req, res) => {
+    const { id_usuario, fechaInicio, fechaFin } = req.query;
+    let sql = "SELECT * FROM ventas WHERE 1=1";
+    const params = [];
+    if (id_usuario) {
+        sql += " AND id_usuario = ?";
+        params.push(id_usuario);
     }
-    
-    if (!estado_venta) {
-        return res.status(400).json({ message: "El estado de la venta es obligatorio" });
+    if (fechaInicio) {
+        sql += " AND fecha_venta >= ?";
+        params.push(fechaInicio);
     }
-    
-    const sql = "UPDATE ventas SET estado_venta = ? WHERE id = ?";
-    pool.query(sql, [estado_venta, id], (error, resultado) => {
+    if (fechaFin) {
+        sql += " AND fecha_venta <= ?";
+        params.push(fechaFin);
+    }
+    pool.query(sql, params, (error, resultados) => {
         if (error) {
-            console.error("Error al actualizar el estado de la venta:", error);
-            return res.status(500).json({ message: "Error al actualizar el estado de la venta", error });
+            console.error("Error al filtrar ventas:", error);
+            return res.status(500).json({ message: "Error al filtrar ventas", error });
         }
-        
-        if (resultado.affectedRows > 0) {
-            res.json({ message: "Estado de venta actualizado correctamente" });
-        } else {
-            res.status(404).json({ message: "Venta no encontrada" });
-        }
+        res.json(resultados);
     });
 });
+
+// Productos más vendidos en un periodo
+app.get('/api/productos/mas-vendidos', (req, res) => {
+    const { fechaInicio, fechaFin } = req.query;
+    let sql = `
+        SELECT 
+            dv.id_producto AS id,
+            dv.nombre,
+            dv.descripcion,
+            dv.imagen,
+            SUM(dv.cantidad) AS total_vendido,
+            SUM(dv.cantidad * dv.precio_unitario) AS total
+        FROM detalle_venta dv
+        JOIN ventas v ON dv.id_venta = v.id
+        WHERE v.estado_venta = 'Completada'
+    `;
+    const params = [];
+    if (fechaInicio) {
+        sql += " AND v.fecha_venta >= ?";
+        params.push(fechaInicio);
+    }
+    if (fechaFin) {
+        sql += " AND v.fecha_venta <= ?";
+        params.push(fechaFin);
+    }
+    sql += " GROUP BY dv.id_producto, dv.nombre, dv.descripcion, dv.imagen ORDER BY total_vendido DESC";
+    pool.query(sql, params, (error, resultados) => {
+        if (error) {
+            console.error("Error al obtener productos más vendidos:", error);
+            return res.status(500).json({ message: "Error al obtener productos más vendidos", error });
+        }
+        res.json(resultados);
+    });
+});
+
+// Obtener detalle de venta por ID de venta
+app.get('/api/detalle_venta/:id_venta', (req, res) => {
+    const { id_venta } = req.params;
+    const sql = `
+        SELECT dv.*, p.nombre 
+        FROM detalle_venta dv
+        JOIN productos p ON dv.id_producto = p.id
+        WHERE dv.id_venta = ?
+    `;
+    pool.query(sql, [id_venta], (error, resultados) => {
+        if (error) {
+            console.error("Error al obtener detalle de venta:", error);
+            return res.status(500).json({ message: "Error al obtener detalle de venta", error });
+        }
+        res.json(resultados);
+    });
+});
+
+// // Eliminar una venta y sus detalles
+// app.delete('/api/ventas/:id', (req, res) => {
+//     const { id } = req.params;
+//     // Primero elimina los detalles de venta asociados
+//     pool.query("DELETE FROM detalle_venta WHERE id_venta = ?", [id], (errorDetalle) => {
+//         if (errorDetalle) {
+//             console.error("Error al eliminar detalle de venta:", errorDetalle);
+//             return res.status(500).json({ message: "Error al eliminar detalle de venta", error: errorDetalle });
+//         }
+//         // Luego elimina la venta
+//         pool.query("DELETE FROM ventas WHERE id = ?", [id], (errorVenta) => {
+//             if (errorVenta) {
+//                 console.error("Error al eliminar venta:", errorVenta);
+//                 return res.status(500).json({ message: "Error al eliminar venta", error: errorVenta });
+//             }
+//             res.json({ message: "Venta eliminada correctamente" });
+//         });
+//     });
+// });
 
 // INICIAR EL SERVIDOR GENERAL
 

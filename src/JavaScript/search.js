@@ -207,7 +207,7 @@
                 // Contenido de la tarjeta
                 tarjeta.innerHTML = `
                     <div style="height: 150px; overflow: hidden; display: flex; align-items: center; justify-content: center; background-color: #f9f9f9;">
-                        <img src="${producto.imagen}" alt="${producto.nombre}" style="max-width: 100%; max-height: 100%;">
+                        <img src="${producto.imagen}" alt="${producto.nombre}" style="max-width: 100%; max-height: auto;">
                     </div>
                     <div style="padding: 15px;">
                         <h4 style="margin: 0 0 10px 0; color: #333;">${producto.nombre}</h4>

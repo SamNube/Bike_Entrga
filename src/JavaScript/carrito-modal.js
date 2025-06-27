@@ -427,7 +427,21 @@ document.addEventListener('click', event => {
       // Intenta obtener el ID del producto
       if (contenedor.dataset.productoId) {
         productoId = parseInt(contenedor.dataset.productoId);
+      } else if (contenedor.dataset.id) {
+        productoId = parseInt(contenedor.dataset.id);
       } else {
+        // Intentar obtener el nombre y buscarlo en el catálogo
+        const nombreProducto = contenedor.querySelector('h3, h2')?.textContent?.trim();
+        if (nombreProducto) {
+          const productos = obtenerProductosCatalogo();
+          const producto = productos.find(p => p.nombre === nombreProducto);
+          if (producto) {
+            productoId = producto.id;
+          }
+        }
+      }
+
+      if (!productoId) {
         console.warn('No se pudo determinar el ID del producto');
         return;
       }
@@ -597,21 +611,6 @@ function procesarCompraFinal() {
   const productos = obtenerProductosCatalogo();
   let productosActualizados = [...productos];
 
-  // Inicio del HTML de la factura
-  let facturaHTML = `
-    <div class="factura">
-      <div class="factura-header">
-        <h2>Factura de Compra</h2>
-        <p><strong>N° Factura:</strong> ${numeroFactura}</p>
-        <p><strong>Fecha:</strong> ${fecha}</p>
-      </div>
-      <div class="factura-detalles">
-        <h3>Productos:</h3>
-        <table>
-          <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th></tr></thead>
-          <tbody>
-  `;
-
   // Array para almacenar los productos que necesitan actualización de stock
   const productosParaActualizar = [];
 
@@ -631,6 +630,57 @@ function procesarCompraFinal() {
       productosParaActualizar.push(productoActualizado);
     }
 
+    const subtotal = item.precio * item.cantidad;
+    total += subtotal;
+  }
+
+  // NUEVO: Registrar la venta en la base de datos
+  const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual'));
+  if (usuarioActual && usuarioActual.id) {
+    fetch('http://localhost:3000/api/ventas', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id_usuario: usuarioActual.id,
+        venta_total: total,
+        productos: carrito.map(item => ({
+          id: item.id,
+          cantidad: item.cantidad,
+          precio: item.precio
+        }))
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.id_venta) {
+        console.log('Venta registrada en la base de datos:', data.id_venta);
+      } else {
+        mostrarNotificacion('No se pudo registrar la venta en la base de datos', 'error');
+      }
+    })
+    .catch(err => {
+      console.error('Error al registrar venta:', err);
+      mostrarNotificacion('Error al registrar la venta en la base de datos', 'error');
+    });
+  }
+
+  // Inicio del HTML de la factura
+  let facturaHTML = `
+    <div class="factura">
+      <div class="factura-header">
+        <h2>Factura de Compra</h2>
+        <p><strong>N° Factura:</strong> ${numeroFactura}</p>
+        <p><strong>Fecha:</strong> ${fecha}</p>
+      </div>
+      <div class="factura-detalles">
+        <h3>Productos:</h3>
+        <table>
+          <thead><tr><th>Producto</th><th>Cantidad</th><th>Precio Unit.</th><th>Subtotal</th></tr></thead>
+          <tbody>
+  `;
+
+  // Procesar cada item del carrito
+  for (const item of carrito) {
     const subtotal = item.precio * item.cantidad;
     total += subtotal;
 

@@ -57,7 +57,11 @@ show databases ;
 select * from usuarios;
 select * from productos;
 select * from ventas;
+select * from detalle_venta;
 
+ALTER TABLE detalle_venta DROP FOREIGN KEY detalle_venta_ibfk_2;
+ALTER TABLE detalle_venta ADD CONSTRAINT detalle_venta_ibfk_2 FOREIGN KEY (id_venta) REFERENCES ventas(id) ON DELETE CASCADE;
+ALTER TABLE productos ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1;
 
 ALTER TABLE productos drop COLUMN caracteristicas ;
 ALTER TABLE productos ADD COLUMN caracteristicas TEXT;

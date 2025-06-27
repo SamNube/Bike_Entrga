@@ -17,7 +17,12 @@ class BikeHeader extends HTMLElement {
                 </div>
             </div>
 
-          
+            <div class="contenedor-busqueda">
+                <input type="text" placeholder="¿Qué estás buscando?" class="input-busqueda">
+                <button class="boton-busqueda">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
             <ul class="enlaces-nav">
                 <!-- Elementos para el menú móvil -->
                 <li class="elemento-menu-movil"><a href="index.html"><i class="fas fa-home"></i> Inicio</a></li>
@@ -156,7 +161,7 @@ class BikeHeader extends HTMLElement {
 }
 
 // Definir el elemento personalizado
-customElements.define("bike-header", BikeHeader);
+customElements.define("bike-header2", BikeHeader);
 
 // Agregar un evento para comprobar el estado de inicio de sesión cuando se carga la página
 document.addEventListener('DOMContentLoaded', function() {
