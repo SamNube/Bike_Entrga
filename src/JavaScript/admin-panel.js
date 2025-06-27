@@ -665,8 +665,31 @@ async function verDetalleVenta(ventaStr, usuarioStr, detallesStr) {
     .modal-content { background:#fff; margin:60px auto; padding:30px 20px 20px 20px; border-radius:10px; box-shadow:0 2px 16px rgba(0,0,0,0.2); position:relative; }
     .modal-content table th, .modal-content table td { padding:8px 6px; border-bottom:1px solid #eee; text-align:center; }
     .modal-content table th { background:#f5f5f5; }
-    .close-modal { color:#888; font-weight:bold; transition:color 0.2s; }
-    .close-modal:hover { color:#e53935; }
+    .close-modal {
+        color:#888;
+        font-weight:bold;
+        font-size:2.2rem;
+        position:absolute;
+        top:18px;
+        right:28px;
+        cursor:pointer;
+        line-height:1;
+        z-index:10;
+        background:rgba(255,255,255,0.85);
+        border-radius:50%;
+        width:38px;
+        height:38px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        transition:color 0.2s, background 0.2s;
+        border:1px solid #eee;
+    }
+    .close-modal:hover {
+        color:#fff;
+        background:#e53935;
+        border-color:#e53935;
+    }
     @media (max-width:700px) { .modal-content { width:95vw !important; padding:10px; } }
     `;
     document.head.appendChild(style);
