@@ -676,7 +676,40 @@ async function verDetalleVenta(ventaStr, usuarioStr, detallesStr) {
 async function cargarProductosMasVendidos() {
     let url = `${API_URL}/productos/mas-vendidos`;
     const res = await fetch(url);
-    const productos = await res.json();
+    const productosMasVendidos = await res.json();
+
+    // Obtener imagen y descripción incluso si el producto está inactivo o eliminado
+    const productosHtml = await Promise.all(productosMasVendidos.map(async p => {
+        let imagen = p.imagen;
+        let descripcion = p.descripcion;
+        // Si falta imagen o descripción, intenta buscar en el catálogo (activos o inactivos)
+        if (!imagen || !descripcion) {
+            let prod = productos.find(prod => prod.id == p.id);
+            if (!prod) {
+                // Buscar en la API aunque esté inactivo
+                try {
+                    const res = await fetch(`${API_URL}/productos/${p.id}`);
+                    if (res.ok) prod = await res.json();
+                } catch {}
+            }
+            if (!imagen && prod && prod.imagen) imagen = prod.imagen;
+            if ((!descripcion || descripcion === '') && prod && prod.descripcion) descripcion = prod.descripcion;
+        }
+        return `
+            <tr>
+                <td>${p.id}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;min-width:180px;">
+                        <img src="${imagen || ''}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;background:#f5f5f5;" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/2748/2748558.png';">
+                        <span style="font-weight:600;">${p.nombre}</span>
+                    </div>
+                </td>
+                <td style="max-width:250px;white-space:normal;word-break:break-word;font-size:13px;color:#555;">${descripcion || '<span style=\'color:#bbb\'>(Sin descripción)</span>'}</td>
+                <td>${p.total_vendido}</td>
+                <td>$${parseFloat(p.total).toFixed(2)}</td>
+            </tr>
+        `;
+    }));
 
     const contenedor = document.getElementById('productos-mas-vendidos');
     contenedor.innerHTML = `
@@ -691,22 +724,9 @@ async function cargarProductosMasVendidos() {
                 </tr>
             </thead>
             <tbody>
-                ${
-                    productos.length === 0
+                ${productosHtml.length === 0
                     ? `<tr><td colspan="5" style="text-align:center;">No hay productos vendidos</td></tr>`
-                    : productos.map(p => `
-                        <tr>
-                            <td>${p.id}</td>
-                            <td>
-                                <img src="${p.imagen}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:contain;border-radius:5px;margin-right:8px;vertical-align:middle;">
-                                ${p.nombre}
-                            </td>
-                            <td>${p.descripcion}</td>
-                            <td>${p.total_vendido}</td>
-                            <td>$${parseFloat(p.total).toFixed(2)}</td>
-                        </tr>
-                    `).join('')
-                }
+                    : productosHtml.join('')}
             </tbody>
         </table>
     `;
@@ -783,7 +803,7 @@ async function cargarProductosMasVendidosPorHistorial() {
     for (const venta of ventas) {
         const detalleRes = await fetch(`${API_URL}/detalle_venta/${venta.id}`);
         const detalles = await detalleRes.json();
-        detalles.forEach(d => {
+        for (const d of detalles) {
             if (!productosVendidos[d.id_producto]) {
                 productosVendidos[d.id_producto] = {
                     id: d.id_producto,
@@ -797,12 +817,43 @@ async function cargarProductosMasVendidosPorHistorial() {
             }
             productosVendidos[d.id_producto].total_vendido += d.cantidad;
             productosVendidos[d.id_producto].total += d.cantidad * d.precio_unitario;
-        });
+        }
     }
 
     // Convertir a array y ordenar
     const productosArray = Object.values(productosVendidos);
     productosArray.sort((a, b) => b.total_vendido - a.total_vendido);
+
+    // Aplicar lógica de respaldo para imagen y descripción
+    const productosHtml = await Promise.all(productosArray.map(async p => {
+        let imagen = p.imagen;
+        let descripcion = p.descripcion;
+        if (!imagen || !descripcion) {
+            let prod = productos.find(prod => prod.id == p.id);
+            if (!prod) {
+                try {
+                    const res = await fetch(`${API_URL}/productos/${p.id}`);
+                    if (res.ok) prod = await res.json();
+                } catch {}
+            }
+            if (!imagen && prod && prod.imagen) imagen = prod.imagen;
+            if ((!descripcion || descripcion === '') && prod && prod.descripcion) descripcion = prod.descripcion;
+        }
+        return `
+            <tr>
+                <td>${p.id}</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;min-width:180px;">
+                        <img src="${imagen || ''}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;background:#f5f5f5;" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/2748/2748558.png';">
+                        <span style="font-weight:600;">${p.nombre}</span>
+                    </div>
+                </td>
+                <td style="max-width:250px;white-space:normal;word-break:break-word;font-size:13px;color:#555;">${descripcion || '<span style=\'color:#bbb\'>(Sin descripción)</span>'}</td>
+                <td>${p.total_vendido}</td>
+                <td>$${parseFloat(p.total).toFixed(2)}</td>
+            </tr>
+        `;
+    }));
 
     // Renderizar tabla
     const contenedor = document.getElementById('productos-mas-vendidos');
@@ -818,22 +869,9 @@ async function cargarProductosMasVendidosPorHistorial() {
                 </tr>
             </thead>
             <tbody>
-                ${
-                    productosArray.length === 0
+                ${productosHtml.length === 0
                     ? `<tr><td colspan="5" style="text-align:center;">No hay productos vendidos en este periodo.</td></tr>`
-                    : productosArray.map(p => `
-                        <tr>
-                            <td>${p.id}</td>
-                            <td>
-                                <img src="${p.imagen}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:contain;border-radius:5px;margin-right:8px;vertical-align:middle;">
-                                ${p.nombre}
-                            </td>
-                            <td>${p.descripcion}</td>
-                            <td>${p.total_vendido}</td>
-                            <td>$${parseFloat(p.total).toFixed(2)}</td>
-                        </tr>
-                    `).join('')
-                }
+                    : productosHtml.join('')}
             </tbody>
         </table>
     `;
