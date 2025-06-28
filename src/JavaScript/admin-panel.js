@@ -37,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
             preview.style.display = 'none';
         }
     });
+    document.getElementById('exportarPDF').addEventListener('click', exportarHistorialVentasPDF);
 });
 
 // Mostrar sección
@@ -898,4 +899,102 @@ async function cargarProductosMasVendidosPorHistorial() {
             </tbody>
         </table>
     `;
+}
+
+// Función para exportar historial de ventas a PDF
+async function exportarHistorialVentasPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Obtén los datos completos del historial de ventas
+    const filas = await obtenerHistorialVentasCompleto();
+
+    // Encabezado del informe
+    const nombreInforme = "Historial de Ventas";
+    const fechaEmision = new Date().toLocaleString();
+    const usuario = usuarioActual ? `${usuarioActual.nombre} ${usuarioActual.apellido || ''}` : "Desconocido";
+
+    doc.setFontSize(16);
+    doc.text(nombreInforme, 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Fecha y hora de emisión: ${fechaEmision}`, 14, 22);
+    doc.text(`Usuario emisor: ${usuario}`, 14, 27);
+
+    // Columnas para el PDF
+    const columns = [
+        { header: "ID Venta", dataKey: "id" },
+        { header: "Fecha", dataKey: "fecha" },
+        { header: "Cliente", dataKey: "cliente" },
+        { header: "Producto", dataKey: "producto" },
+        { header: "Unidades", dataKey: "unidades" },
+        { header: "Precio Unitario", dataKey: "precio_unitario" },
+        { header: "Total", dataKey: "total" }
+    ];
+
+    // Agrega la tabla
+    doc.autoTable({
+        columns: columns,
+        body: filas,
+        startY: 32,
+        theme: 'grid',
+        headStyles: { fillColor: [41, 128, 185] }
+    });
+
+    // Numeración de páginas
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.text(`Página ${i} de ${pageCount}`, doc.internal.pageSize.getWidth() - 40, doc.internal.pageSize.getHeight() - 10);
+    }
+
+    doc.save('historial_ventas.pdf');
+}
+
+async function obtenerHistorialVentasCompleto() {
+    // Obtener ventas
+    const res = await fetch(`${API_URL}/ventas`);
+    const ventas = await res.json();
+
+    // Obtener usuarios
+    const usuariosRes = await fetch(`${API_URL}/usuarios`);
+    const usuarios = await usuariosRes.json();
+
+    // Para cada venta, obtener detalles y asociar usuario
+    let filas = [];
+    for (const v of ventas) {
+        // Buscar usuario
+        const usuario = usuarios.find(u => u.id === v.id_usuario);
+        const cliente = usuario ? `${usuario.nombre} ${usuario.apellido || ''}` : 'N/A';
+
+        // Obtener detalles de la venta
+        let detalles = [];
+        try {
+            const detallesRes = await fetch(`${API_URL}/detalle_venta/${v.id}`);
+            detalles = await detallesRes.json();
+        } catch {
+            detalles = [];
+        }
+
+        // Formatear fecha
+        let fecha = '';
+        if (v.fecha_venta) {
+            const f = new Date(v.fecha_venta);
+            fecha = `${f.getDate().toString().padStart(2, '0')}/${(f.getMonth()+1).toString().padStart(2, '0')}/${f.getFullYear()}`;
+        }
+
+        // Por cada producto vendido, una fila
+        for (const d of detalles) {
+            filas.push({
+                id: v.id,
+                fecha,
+                cliente,
+                producto: d.nombre || 'N/A',
+                unidades: d.cantidad,
+                precio_unitario: d.precio_unitario ? `$${parseFloat(d.precio_unitario).toFixed(2)}` : '-',
+                total: d.cantidad && d.precio_unitario ? `$${(d.cantidad * d.precio_unitario).toFixed(2)}` : '-'
+            });
+        }
+    }
+    return filas;
 }
