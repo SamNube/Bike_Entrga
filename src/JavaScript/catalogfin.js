@@ -27,7 +27,8 @@ function cargarProductosDelCatalogo() {
             return response.json();
         })
         .then(data => {
-            productosDelCatalogo = data;
+            // Filtrar solo productos activos
+            productosDelCatalogo = data.filter(p => p.activo !== 0);
             console.log('Productos cargados:', productosDelCatalogo);
 
             // Organizar productos por categoría
@@ -49,10 +50,12 @@ function verificarActualizaciones() {
     fetch(`${API_URL}/productos`)
         .then(response => response.json())
         .then(newData => {
+            // Filtrar solo productos activos
+            const nuevosActivos = newData.filter(p => p.activo !== 0);
             // Verificar si hay cambios comparando con los datos actuales
-            if (JSON.stringify(newData) !== JSON.stringify(productosDelCatalogo)) {
+            if (JSON.stringify(nuevosActivos) !== JSON.stringify(productosDelCatalogo)) {
                 console.log('Se detectaron cambios en los productos');
-                productosDelCatalogo = newData;
+                productosDelCatalogo = nuevosActivos;
                 
                 // Reorganizar productos por categoría
                 const goldenProducts = productosDelCatalogo.filter(p => p.categoria === 'golden');
