@@ -181,6 +181,35 @@ img {
     background-color:  #c2a03070;
 }
 
+/* Ajuste para las imágenes de los resultados de búsqueda */
+.modal-busqueda .modal-content div[style*="display: grid"] > div {
+    /* Tarjeta de producto */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 320px; /* Altura fija para todas las tarjetas */
+    justify-content: flex-start;
+}
+
+.modal-busqueda .modal-content div[style*="display: grid"] > div > div:first-child {
+    /* Contenedor de la imagen */
+    width: 100%;
+    height: 170px; /* Altura fija para la imagen */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    overflow: hidden;
+}
+
+.modal-busqueda .modal-content div[style*="display: grid"] > div > div:first-child img {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    display: block;
+}
+
 
 /* 4.3 Enlaces de navegación */
 .enlaces-nav {
