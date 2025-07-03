@@ -413,6 +413,11 @@ document.addEventListener('click', event => {
   // Si el clic es en un botón "Añadir al carrito" en cualquier lugar
   const addCartBtn = event.target.closest('button:not([disabled])');
 
+  // EVITAR DUPLICADOS: Si el botón está dentro de un modal de producto, salir
+  if (addCartBtn && addCartBtn.closest('.producto-modal')) {
+    return;
+  }
+
   if (addCartBtn && addCartBtn.textContent.includes('Añadir al carrito')) {
     event.preventDefault();
 
@@ -566,8 +571,14 @@ function finalizarCompra() {
     return;
   }
 
+  // Calcular el total antes de mostrar la confirmación
+  let total = 0;
+  carrito.forEach(item => {
+    total += item.precio * item.cantidad;
+  });
+
   // Si el usuario está autenticado, proceder con la compra
-  mostrarConfirmacionCompra();
+  mostrarConfirmacionCompra(total);
 }
 
 // Nueva función para mostrar el modal de confirmación de compra
@@ -682,7 +693,7 @@ function procesarCompraFinal() {
   // Procesar cada item del carrito
   for (const item of carrito) {
     const subtotal = item.precio * item.cantidad;
-    total += subtotal;
+    // total += subtotal; // Quita esta línea, ya sumaste antes
 
     facturaHTML += `
       <tr>
