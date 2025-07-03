@@ -471,6 +471,16 @@ function closeVerProductoModal() {
 
 // Confirmar eliminación de producto
 function confirmarEliminarProducto(id) {
+    const producto = productos.find(p => p.id === id);
+    if (!producto) {
+        showNotification('Producto no encontrado', 'error');
+        return;
+    }
+    // Restricción: solo permitir eliminar si el stock es 0 o menor
+    if (producto.stock > 0) {
+        showNotification('No se puede eliminar el producto hasta que el stock esté gotado.', 'error');
+        return;
+    }
     if (confirm('¿Está seguro de que desea eliminar este producto?')) {
         eliminarProducto(id);
     }
@@ -850,9 +860,8 @@ async function cargarProductosMasVendidosPorHistorial() {
 
     // Aplicar lógica de respaldo para imagen y descripción
     const productosHtml = await Promise.all(productosArray.map(async p => {
-        let imagen = p.imagen;
         let descripcion = p.descripcion;
-        if (!imagen || !descripcion) {
+        if (!descripcion) {
             let prod = productos.find(prod => prod.id == p.id);
             if (!prod) {
                 try {
@@ -860,17 +869,13 @@ async function cargarProductosMasVendidosPorHistorial() {
                     if (res.ok) prod = await res.json();
                 } catch {}
             }
-            if (!imagen && prod && prod.imagen) imagen = prod.imagen;
             if ((!descripcion || descripcion === '') && prod && prod.descripcion) descripcion = prod.descripcion;
         }
         return `
             <tr>
                 <td>${p.id}</td>
                 <td>
-                    <div style="display:flex;align-items:center;gap:10px;min-width:180px;">
-                        <img src="${imagen || ''}" alt="${p.nombre}" style="width:40px;height:40px;object-fit:cover;border-radius:5px;background:#f5f5f5;" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/2748/2748558.png';">
-                        <span style="font-weight:600;">${p.nombre}</span>
-                    </div>
+                    <span style="font-weight:600;">${p.nombre}</span>
                 </td>
                 <td style="max-width:250px;white-space:normal;word-break:break-word;font-size:13px;color:#555;">${descripcion || '<span style=\'color:#bbb\'>(Sin descripción)</span>'}</td>
                 <td>${p.total_vendido}</td>

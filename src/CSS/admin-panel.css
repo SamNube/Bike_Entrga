@@ -635,3 +635,23 @@ textarea.form-control {
     }
 }
 
+.btn.btn-primary, .btn-export {
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.btn.btn-primary:hover, .btn-export:hover {
+    background-color: #b71c1c;
+    color: #fff;
+}
