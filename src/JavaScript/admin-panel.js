@@ -112,11 +112,11 @@ function showProductModal(producto = null) {
         stock.style.cursor = 'not-allowed';
         
         // Agregar mensaje informativo debajo del campo
-        const stockFormGroup = stock.parentElement;
-        const infoMessage = document.createElement('div');
-        infoMessage.id = 'stock-edit-note';
-        infoMessage.innerHTML = '<div style="color: #dc3545; margin-top: 5px; font-style: italic;"><i class="fas fa-info-circle"></i> El stock sólo puede modificarse desde la sección "Gestión de Stock"</div>';
-        stockFormGroup.appendChild(infoMessage);
+        // const stockFormGroup = stock.parentElement;
+        // const infoMessage = document.createElement('div');
+        // infoMessage.id = 'stock-edit-note';
+        // infoMessage.innerHTML = '<div style="color: #dc3545; margin-top: 5px; font-style: italic;"><i class="fas fa-info-circle"></i> El stock sólo puede modificarse desde la sección "Gestión de Stock"</div>';
+        // stockFormGroup.appendChild(infoMessage);
 
         // Mostrar vista previa de la imagen
         if (producto.imagen) {

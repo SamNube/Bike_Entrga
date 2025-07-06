@@ -80,10 +80,10 @@
                     <i class="fas fa-chart-line"></i>
                     <span>Historial de ventas</span>
                 </li>
-                <li onclick="showSection('clientes')">
+                <!-- <li onclick="showSection('clientes')">
                     <i class="fas fa-users"></i>
                     <span>Clientes</span>
-                </li>
+                </li> -->
                 <li onclick="cerrarSesion()">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar sesión</span>
@@ -288,7 +288,9 @@
                 
                 <div class="form-group">
                     <label for="stockCantidad">Cantidad en stock (5-20):</label>
-                    <input type="number" id="stockCantidad" class="form-control" min="5" max="20" required>
+                    <input type="number" id="stockCantidad" class="form-control" min="5" max="20" required
+    oninvalid="this.setCustomValidity('El stock mínimo tiene que ser minimo de 5 y el máximo permitido es de  20')"
+    oninput="this.setCustomValidity('')">
                     <small>El stock mínimo es 5 y el máximo es 20</small>
                 </div>
                 <button type="submit" class="btn-submit">Actualizar Stock</button>
