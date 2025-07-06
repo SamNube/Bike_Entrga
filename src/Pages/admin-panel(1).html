@@ -107,14 +107,20 @@
                             <button class="btn-generate" onclick="generarReporteVentas()">
                                 <i class="fas fa-sync-alt"></i> Generar Reporte
                             </button>
-                            <!-- 
-                                       <button class="btn-export" onclick="exportarReporteCSV()">
-                                <i class="fas fa-file-export"></i> Exportar CSV
-                            </button>
-                            -->
-                            <button id="exportarPDF" class="btn btn-primary">
-                                <i class="fa fa-file-pdf"></i> Exportar PDF
-                            </button>
+                            <!-- Submenú de exportación -->
+                            <div style="display:inline-block; position:relative;">
+                                <button class="btn btn-primary" style="margin-left:10px;">
+                                    <i class="fa fa-file-pdf"></i> Exportar PDF <i class="fa fa-caret-down"></i>
+                                </button>
+                                <div style="position:absolute;left:0;top:100%;background:#fff;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,0.08);z-index:10;display:none;" id="submenuExportarPDF">
+                                    <button id="exportarPDFFiltrado" style="width:100%;border:none;background:none;padding:10px 20px;text-align:left;cursor:pointer;">
+                                        <i class="fa fa-filter"></i> Exportar historial filtrado
+                                    </button>
+                                    <button id="exportarPDFCompleto" style="width:100%;border:none;background:none;padding:10px 20px;text-align:left;cursor:pointer;">
+                                        <i class="fa fa-list"></i> Exportar historial completo
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -306,7 +312,22 @@
         </div>
     </div>
 
-    
+    <script>
+    // Mostrar/ocultar submenú de exportar PDF
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.querySelector('.btn.btn-primary');
+        const submenu = document.getElementById('submenuExportarPDF');
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        });
+        document.addEventListener('click', function(e) {
+            if (!btn.contains(e.target) && !submenu.contains(e.target)) {
+                submenu.style.display = 'none';
+            }
+        });
+    });
+</script>
 
     <script src="../JavaScript/admin-panel.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
