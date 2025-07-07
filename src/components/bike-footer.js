@@ -20,8 +20,7 @@ class BikeFooter extends HTMLElement {
             <h3>Enlaces Rápidos</h3>
             <ul>
                <li><a href="index.html">Inicio</a></li>
-               <li><a href="#catalogo">Catálogo</a></li>
-               <li><a href="#servicios">Servicios</a></li>
+               <li><a href="catalogofn.html">Catálogo</a></li>
                <li><a href="nosotros.html">Nosotros</a></li>
             </ul>
          </div>

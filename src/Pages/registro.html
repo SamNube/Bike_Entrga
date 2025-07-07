@@ -14,22 +14,27 @@
         <h1>Registro de Usuario</h1>
         <form method="post" novalidate>
             <div class="campo">
-                <input type="text" id="nombre" pattern="^[^0-9]+$" title="El nombre no debe contener números" required>
+                <input type="text" id="nombre" pattern="[a-zA-Z]{3,}[a-zA-Z0-9 ]*"
+                    title="El nombre no debe contener números" required>
                 <label for="nombre">Nombre</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
-                <input type="text" id="apellido" pattern="^[^0-9]+$" title="El apellido no debe contener números" required>
+                <input type="text" id="apellido" pattern="[a-zA-Z]{3,}[a-zA-Z0-9 ]*"
+                    title="El apellido no debe contener números" required>
                 <label for="apellido">Apellido</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
-                <input type="email" id="email" pattern="^[^@]+@[^0-9\s@]+\.[^0-9\s@]+$" title="El dominio del correo no debe contener números" required>
+                <input type="email" id="email" pattern="^[a-zA-Z0-9.\-_+]+@[^0-9\s@]+\.[^0-9\s@]+$"
+                    title="El dominio del correo no debe contener números" required>
                 <label for="email">Correo electrónico</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
-                <input type="password" id="contrasena" minlength="8" required>
+                <input type="password" id="contrasena" minlength="8" pattern="[^.:*'|°¬]+"
+                    title="La contraseña no debe contener los caracteres: . : * ' | ° ¬" required
+                    onpaste="return false;" oncopy="return false;" oncut="return false;" required>
                 <label for="contrasena">Contraseña</label>
                 <span class="error-message"></span>
             </div>

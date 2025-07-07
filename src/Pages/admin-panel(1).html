@@ -16,7 +16,7 @@
             border-radius: 4px;
             font-weight: bold;
         }
-        
+
         .stock-normal {
             color: #fff;
             background-color: #4CAF50;
@@ -34,7 +34,7 @@
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .stock-alert-container {
             margin-bottom: 20px;
             max-height: 200px;
@@ -50,7 +50,7 @@
             cursor: pointer;
         }
 
-        .letras-regitro-stock{
+        .letras-regitro-stock {
             font-size: 12px;
             color: #4CAF50;
         }
@@ -88,7 +88,7 @@
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar sesión</span>
                 </li>
-                
+
             </ul>
         </div>
 
@@ -104,11 +104,14 @@
                             <button class="btn btn-primary" style="margin-right:10px;">
                                 <i class="fa fa-file-pdf"></i> Exportar PDF <i class="fa fa-caret-down"></i>
                             </button>
-                            <div style="position:absolute;left:0;top:100%;background:#fff;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,0.08);z-index:10;display:none;" id="submenuExportarPDF">
-                                <button id="exportarPDFFiltrado" disabled style="width:100%;border:none;background:none;padding:10px 20px;text-align:left;cursor:pointer;">
+                            <div style="position:absolute;left:0;top:100%;background:#fff;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,0.08);z-index:10;display:none;"
+                                id="submenuExportarPDF">
+                                <button id="exportarPDFFiltrado" disabled
+                                    style="width:100%;border:none;background:none;padding:10px 20px;text-align:left;cursor:pointer;">
                                     <i class="fa fa-filter"></i> Exportar historial filtrado
                                 </button>
-                                <button id="exportarPDFCompleto" style="width:100%;border:none;background:none;padding:10px 20px;text-align:left;cursor:pointer;">
+                                <button id="exportarPDFCompleto"
+                                    style="width:100%;border:none;background:none;padding:10px 20px;text-align:left;cursor:pointer;">
                                     <i class="fa fa-list"></i> Exportar historial completo
                                 </button>
                             </div>
@@ -126,35 +129,35 @@
                     </div>
                 </div>
 
-    
-    <!-- Tabla de Ventas -->
-    <div class="report-section">
-        <h2>Historial de Ventas</h2>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>ID Venta</th>
-                    <th>Fecha</th>
-                    <th>Cliente</th>
-                    <th>Productos</th>
-                    <th>Unidades</th>
-                    <th>Precio Unitario</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="reporte-ventas-tabla">
-                <!-- Aquí se cargarán las ventas dinámicamente -->
-            </tbody>
-        </table>
-    </div>
 
-    <!-- Productos Más Vendidos -->
-    <div class="report-section">
-        <h2>Productos Más Vendidos</h2>
-        <div class="top-products" id="productos-mas-vendidos"></div>
-    </div>
-</div>
+                <!-- Tabla de Ventas -->
+                <div class="report-section">
+                    <h2>Historial de Ventas</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Venta</th>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Productos</th>
+                                <th>Unidades</th>
+                                <th>Precio Unitario</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reporte-ventas-tabla">
+                            <!-- Aquí se cargarán las ventas dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Productos Más Vendidos -->
+                <div class="report-section">
+                    <h2>Productos Más Vendidos</h2>
+                    <div class="top-products" id="productos-mas-vendidos"></div>
+                </div>
+            </div>
 
 
             <!-- Productos Section -->
@@ -189,11 +192,11 @@
                 <div class="page-header">
                     <h1>Gestión de Stock</h1>
                 </div>
-                
+
                 <div class="stock-alert-container" id="stockAlerts">
                     <!-- Las alertas de stock bajo se mostrarán aquí -->
                 </div>
-                
+
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -220,13 +223,13 @@
         </div>
     </div>
 
-<!-- Modal para Detalle de Venta -->
-<div id="detalleVentaModal" class="modal">
-    <div class="modal-content" style="max-width: 800px;">
-        <div id="detalleVentaContenido"></div>
+    <!-- Modal para Detalle de Venta -->
+    <div id="detalleVentaModal" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div id="detalleVentaContenido"></div>
+        </div>
     </div>
-</div>
-    
+
     <!-- Modal para Productos -->
     <div id="productoModal" class="modal">
         <div class="modal-content">
@@ -235,20 +238,21 @@
             <form id="productoForm" class="product-form">
                 <input type="hidden" id="productoId">
 
-               
+
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" class="form-control" pattern="^[^0-9]+$" required>
+                    <input type="text" id="nombre" class="form-control" pattern="[a-zA-Z0-9 ]+" required>
                 </div>
 
                 <div class="form-group">
                     <label for="precio">Precio:</label>
-                    <input type="number" id="precio" class="form-control" min="0" maxlength="10"  onkeypress="return event.charCode >= 48 && event.charCode <= 57"    required >
+                    <input type="number" id="precio" class="form-control" min="0" maxlength="10"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57" required>
                 </div>
-                
 
 
-                <div class="form-group" >
+
+                <div class="form-group">
                     <label class="letras-regitro-stock" for="stock"> El Stock por Default de cada producto es de (10)
                         para modificar Stock dirijase al apartado de Gestión de Stock
                     </label>
@@ -256,7 +260,9 @@
 
                 <div class="form-group">
                     <label for="imagen">URL de la imagen:</label>
-                    <input type="text" id="imagen" class="form-control"  pattern="https?://.+" title="Ingrese una URL válida (ej: https://www.ejemplo.com)" required minlength="8" maxlength="200" required>
+                    <input type="text" id="imagen" class="form-control" pattern="https?://.+"
+                        title="Ingrese una URL válida (ej: https://www.ejemplo.com)" required minlength="8"
+                        maxlength="200" required>
                     <div class="img-preview">
                         <img id="imagenPreview" src="" alt="Preview" style="max-width: 100%; display: none;">
                     </div>
@@ -288,16 +294,16 @@
             <h2>Actualizar Stock</h2>
             <form id="stockForm" class="product-form">
                 <input type="hidden" id="stockProductoId">
-                
-                 <div class="form-group">
+
+                <div class="form-group">
                     <h3 id="stockProductoNombre"></h3>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="stockCantidad">Cantidad en stock (5-20):</label>
                     <input type="number" id="stockCantidad" class="form-control" min="5" max="20" required
-    oninvalid="this.setCustomValidity('El stock mínimo tiene que ser minimo de 5 y el máximo permitido es de  20')"
-    oninput="this.setCustomValidity('')">
+                        oninvalid="this.setCustomValidity('El stock mínimo tiene que ser minimo de 5 y el máximo permitido es de  20')"
+                        oninput="this.setCustomValidity('')">
                     <small>El stock mínimo es 5 y el máximo es 20</small>
                 </div>
                 <button type="submit" class="btn-submit">Actualizar Stock</button>
@@ -314,21 +320,21 @@
     </div>
 
     <script>
-    // Mostrar/ocultar submenú de exportar PDF
-    document.addEventListener('DOMContentLoaded', function() {
-        const btn = document.querySelector('.btn.btn-primary');
-        const submenu = document.getElementById('submenuExportarPDF');
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+        // Mostrar/ocultar submenú de exportar PDF
+        document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.querySelector('.btn.btn-primary');
+            const submenu = document.getElementById('submenuExportarPDF');
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+            });
+            document.addEventListener('click', function (e) {
+                if (!btn.contains(e.target) && !submenu.contains(e.target)) {
+                    submenu.style.display = 'none';
+                }
+            });
         });
-        document.addEventListener('click', function(e) {
-            if (!btn.contains(e.target) && !submenu.contains(e.target)) {
-                submenu.style.display = 'none';
-            }
-        });
-    });
-</script>
+    </script>
 
     <script src="../JavaScript/admin-panel.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
