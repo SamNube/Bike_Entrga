@@ -954,7 +954,7 @@ async function exportarHistorialVentasPDF() {
     const filas = await obtenerHistorialVentasCompleto();
 
     // Encabezado del informe
-    const nombreInforme = "Historial de Ventas";
+    const nombreInforme = "Historial de Ventas Bike Store";
     const fechaEmision = new Date().toLocaleString();
     const usuario = usuarioActual ? `${usuarioActual.nombre} ${usuarioActual.apellido || ''}` : "Desconocido";
 
@@ -1150,7 +1150,7 @@ async function exportarHistorialFiltradoPDF() {
     const filas = await obtenerHistorialVentasFiltrado();
 
     // Encabezado del informe
-    const nombreInforme = "Historial de Ventas (Filtrado)";
+    const nombreInforme = "Historial de Ventas Bike Store";
     const fechaEmision = new Date().toLocaleString();
     const usuario = usuarioActual ? `${usuarioActual.nombre} ${usuarioActual.apellido || ''}` : "Desconocido";
 
