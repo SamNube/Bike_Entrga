@@ -624,6 +624,28 @@ textarea.form-control {
     background: #fff;
 }
 
+.report-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+.report-header-flex h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+.report-header-flex .report-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.report-header-flex .date-range {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 @media (max-width: 768px) {
     .venta-info {
         flex-direction: column;
@@ -654,4 +676,17 @@ textarea.form-control {
 .btn.btn-primary:hover, .btn-export:hover {
     background-color: #b71c1c;
     color: #fff;
+}
+
+#submenuExportarPDF button,
+#submenuExportarPDF li {
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
+/* Efecto hover para los botones o elementos de lista del submenú */
+#submenuExportarPDF button:hover,
+#submenuExportarPDF li:hover {
+    background: #f2f2f2;
+    color: #e53935;
 }
