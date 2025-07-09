@@ -10,20 +10,20 @@ body {
 }
 
 .formulario {
-    width: 500px;
+    width: 350px; /* Antes 500px */
     background: #2C2C2C;
     border-radius: 10px;
     box-shadow: 0 4px 10px #D4AF37;
-    padding: 20px;
+    padding: 16px; /* Antes 20px */
     color: #fff;
 }
 
 .formulario h1 {
-    text-align: center;
-    padding: 0 0 20px 0;
+    font-size: 20px; /* Antes 24px */
+    padding: 0 0 16px 0;
+    margin-bottom: 16px;
     border-bottom: 1px solid #FFFFFF;
-    margin-bottom: 20px;
-    font-size: 24px;
+    text-align: center; /* <-- Añade esta línea */
 }
 
 .formulario form {
@@ -33,14 +33,16 @@ body {
 
 form .campo {
     position: relative;
-    margin: 30px 0;
+    margin: 20px 0; /* Antes 30px */
+    display: flex;
+    flex-direction: column;
 }
 
 .campo input {
     width: 100%;
-    padding: 10px 5px;
-    height: 40px;
-    font-size: 16px;
+    padding: 8px 5px;
+    height: 34px; /* Antes 40px */
+    font-size: 14px; /* Antes 16px */
     border: none;
     border-bottom: 2px solid #FFFFFF;
     background: transparent;
@@ -54,16 +56,17 @@ form .campo {
     left: 5px;
     color: #fff;
     transform: translateY(-50%);
-    font-size: 16px;
+    font-size: 14px; /* Antes 16px */
     pointer-events: none;
     transition: 0.5s;
 }
 
 .campo input:focus ~ label,
-.campo input:valid ~ label {
+.campo input:valid ~ label,
+.campo input:not(:placeholder-shown) ~ label {
     top: -5px;
     color: #fff;
-    font-size: 12px;
+    font-size: 11px; /* Antes 12px */
 }
 
 .terminos {
@@ -79,7 +82,7 @@ form .campo {
 
 .terminos label {
     color: #fff;
-    font-size: 14px;
+    font-size: 12px; /* Antes 14px */
 }
 
 .terminos a {
@@ -95,18 +98,18 @@ form .campo {
 input[type="submit"],
 .boton-volver {
     width: 100%;
-    height: 40px;
+    height: 34px; /* Antes 40px */
     border: none;
     background: #D4AF37;
     color: #2C2C2C;
-    font-size: 16px;
+    font-size: 14px; /* Antes 16px */
     font-weight: bold;
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s ease;
-    margin-top: 10px;
+    margin-top: 8px; /* Antes 10px */
     text-align: center;
-    line-height: 40px;
+    line-height: 34px;
     text-decoration: none;
     display: block;
 }
@@ -118,9 +121,9 @@ input[type="submit"]:hover,
 
 .iniciar-sesion {
     text-align: center;
-    margin-top: 20px;
+    margin-top: 14px; /* Antes 20px */
     color:  rgba(245, 245, 245, 0.877);
-    font-size: 14px;
+    font-size: 12px; /* Antes 14px */
 }
 
 .iniciar-sesion a {
@@ -154,6 +157,16 @@ input[type="submit"]:hover,
 
 .campo input:focus:invalid {
     outline-color: #e74c3c;
+}
+
+.campo .error-message {
+    color: #e74c3c;
+    font-size: 13px;
+    margin-top: 3px;
+    display: none;
+    font-family: 'Montserrat', sans-serif;
+    min-height: 16px;
+    /* Para reservar espacio y evitar que el formulario salte */
 }
 
 @media (max-width: 1350px) {

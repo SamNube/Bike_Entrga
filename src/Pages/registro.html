@@ -15,36 +15,36 @@
         <form method="post" novalidate>
             <div class="campo">
                 <input type="text" id="nombre" pattern="[a-zA-Z]{3,}[a-zA-Z0-9 ]*"
-                    title="El nombre no debe contener números" required>
+                    title="El nombre no debe contener números" required placeholder=" ">
                 <label for="nombre">Nombre</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
                 <input type="text" id="apellido" pattern="[a-zA-Z]{3,}[a-zA-Z0-9 ]*"
-                    title="El apellido no debe contener números" required>
+                    title="El apellido no debe contener números" required placeholder=" ">
                 <label for="apellido">Apellido</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
                 <input type="email" id="email" pattern="^[a-zA-Z0-9.\-_+]+@[^0-9\s@]+\.[^0-9\s@]+$"
-                    title="El dominio del correo no debe contener números" required>
+                    title="El dominio del correo no debe contener números" required placeholder=" ">
                 <label for="email">Correo electrónico</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
                 <input type="password" id="contrasena" minlength="8" pattern="[^.:*'|°¬]+"
                     title="La contraseña no debe contener los caracteres: . : * ' | ° ¬" required
-                    onpaste="return false;" oncopy="return false;" oncut="return false;" required>
+                    onpaste="return false;" oncopy="return false;" oncut="return false;" required placeholder=" ">
                 <label for="contrasena">Contraseña</label>
                 <span class="error-message"></span>
             </div>
             <div class="campo">
-                <input type="password" id="confirmar-contrasena" required>
+                <input type="password" id="confirmar-contrasena" required placeholder=" ">
                 <label for="confirmar-contrasena">Confirmar contraseña</label>
                 <span class="error-message"></span>
             </div>
             <div class="terminos">
-                <input type="checkbox" id="aceptar" name="aceptar" required>
+                <input type="checkbox" id="aceptar" name="aceptar" required placeholder=" ">
                 <label for="aceptar">Acepto los <a href="#">Términos y Condiciones</a></label>
             </div>
             <input type="submit" value="Registrarse">

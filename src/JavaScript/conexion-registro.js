@@ -1,236 +1,197 @@
 // Espera a que todo el contenido de la página esté completamente cargado antes de ejecutar el script.
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector("form");
-    const campos = document.querySelectorAll(".campo input");
-    const confirmarContrasena = document.getElementById("confirmar-contrasena");
-    
-    // Mostrar mensajes de error personalizados para cada campo
-    campos.forEach(input => {
-        input.addEventListener("input", function() {
-            const errorSpan = this.nextElementSibling.nextElementSibling;
-            
-            if (!this.validity.valid) {
-                // Mostrar mensaje de error específico
-                errorSpan.textContent = this.title || "Por favor la contraseña debe tener almenos 8 caracteres";
-                errorSpan.style.display = "block";
-            } else {
-                errorSpan.textContent = "";
-                errorSpan.style.display = "none";
-            }
-        });
-    });
-    
-    // Verificar que las contraseñas coincidan
-    confirmarContrasena.addEventListener("input", function() {
-        const contrasena = document.getElementById("contrasena");
-        const errorSpan = this.nextElementSibling.nextElementSibling;
-        
-        if (this.value !== contrasena.value) {
-            errorSpan.textContent = "Las contraseñas no coinciden";
-            errorSpan.style.display = "block";
-            this.setCustomValidity("Las contraseñas no coinciden");
+    const nombre = document.getElementById("nombre");
+    const apellido = document.getElementById("apellido");
+    const email = document.getElementById("email");
+    const contrasena = document.getElementById("contrasena");
+    const confirmar = document.getElementById("confirmar-contrasena");
+    const checkbox = document.getElementById("aceptar");
+
+    // Utilidad para mostrar/ocultar mensajes
+    function showError(input, message) {
+        const error = input.parentElement.querySelector('.error-message');
+        error.textContent = message;
+        error.style.display = "block";
+    }
+    function hideError(input) {
+        const error = input.parentElement.querySelector('.error-message');
+        error.textContent = "";
+        error.style.display = "none";
+    }
+
+    // Validaciones en tiempo real
+    nombre.addEventListener("input", function () {
+        if (!this.value) {
+            showError(this, "El nombre es obligatorio");
+        } else if (/\d/.test(this.value)) {
+            showError(this, "El nombre no debe contener números");
+        } else if (/[^a-zA-Z0-9 ]/.test(this.value)) {
+            showError(this, "El nombre no debe contener caracteres especiales");
+        } else if (this.value.replace(/[^a-zA-Z]/g, '').length < 3) {
+            showError(this, "El nombre debe tener al menos 3 letras");
         } else {
-            errorSpan.textContent = "";
-            errorSpan.style.display = "none";
-            this.setCustomValidity("");
+            hideError(this);
         }
     });
 
-    form.addEventListener("submit", async function (event) {
-        event.preventDefault();
-        
-        // Validación del formulario
-        const isValid = form.checkValidity();
-        
-        if (!isValid) {
-            // Mostrar mensajes de error para todos los campos inválidos
-            campos.forEach(input => {
-                if (!input.validity.valid) {
-                    const errorSpan = input.nextElementSibling.nextElementSibling;
-                    errorSpan.textContent = input.title || "Por favor complete este campo correctamente";
-                    errorSpan.style.display = "block";
-                }
-            });
-            return;
+    apellido.addEventListener("input", function () {
+        if (!this.value) {
+            showError(this, "El apellido es obligatorio");
+        } else if (/\d/.test(this.value)) {
+            showError(this, "El apellido no debe contener números");
+        } else if (/[^a-zA-Z0-9 ]/.test(this.value)) {
+            showError(this, "El apellido no debe contener caracteres especiales");
+        } else if (this.value.replace(/[^a-zA-Z]/g, '').length < 3) {
+            showError(this, "El apellido debe tener al menos 3 letras");
+        } else {
+            hideError(this);
         }
-        
-        // Verificar que las contraseñas coincidan
-        const contrasena = document.getElementById("contrasena").value;
-        const confirmarContrasena = document.getElementById("confirmar-contrasena").value;
-        
-        if (contrasena !== confirmarContrasena) {
-            const errorSpan = document.getElementById("confirmar-contrasena").nextElementSibling.nextElementSibling;
-            errorSpan.textContent = "Las contraseñas no coinciden";
-            errorSpan.style.display = "block";
-            return;
+    });
+
+    email.addEventListener("input", function () {
+        if (!this.value) {
+            showError(this, "El correo es obligatorio");
+        } else if (/[^a-zA-Z0-9.\-_+@]/.test(this.value)) {
+            showError(this, "El correo no debe contener caracteres especiales ni emojis");
+        } else {
+            const partes = this.value.split("@");
+            if (partes.length !== 2) {
+                showError(this, "El correo debe tener un solo @");
+            } else {
+                const dominio = partes[1];
+                const dominioNombre = dominio.split(".")[0];
+                if (/\d/.test(dominioNombre)) {
+                    showError(this, "El dominio del correo no debe contener números");
+                } else if (!/^[a-zA-Z]+\.[a-zA-Z]{2,}$/.test(dominio)) {
+                    showError(this, "El dominio debe ser válido (ej: gmail.com)");
+                } else {
+                    hideError(this);
+                }
+            }
+        }
+    });
+
+    contrasena.addEventListener("input", function () {
+        if (!this.value) showError(this, "La contraseña es obligatoria");
+        else if (this.value.length < 8) showError(this, "La contraseña debe tener al menos 8 caracteres");
+        else if (/[.:*'|°¬]/.test(this.value)) showError(this, "La contraseña no debe contener los caracteres: . : * ' | ° ¬");
+        else hideError(this);
+
+        // Validar confirmación en tiempo real
+        if (confirmar.value && this.value !== confirmar.value) {
+            showError(confirmar, "Las contraseñas no coinciden");
+        } else if (confirmar.value) {
+            hideError(confirmar);
+        }
+    });
+
+    confirmar.addEventListener("input", function () {
+        if (!this.value) showError(this, "Confirma tu contraseña");
+        else if (contrasena.value !== this.value) showError(this, "Las contraseñas no coinciden");
+        else hideError(this);
+    });
+
+    // Validación al enviar
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        let valido = true;
+
+        // Nombre
+        if (!nombre.value) {
+            showError(nombre, "El nombre es obligatorio"); valido = false;
+        } else if (/\d/.test(nombre.value)) {
+            showError(nombre, "El nombre no debe contener números"); valido = false;
+        } else if (/[^a-zA-Z0-9 ]/.test(nombre.value)) {
+            showError(nombre, "El nombre no debe contener caracteres especiales"); valido = false;
+        } else if (nombre.value.replace(/[^a-zA-Z]/g, '').length < 3) {
+            showError(nombre, "El nombre debe tener al menos 3 letras"); valido = false;
+        } else {
+            hideError(nombre);
         }
 
-        // Si todo está validado, enviar el formulario
-        const nombre = document.getElementById("nombre").value;
-        const apellido = document.getElementById("apellido").value;
-        const email = document.getElementById("email").value;
-        
+        // Apellido
+        if (!apellido.value) {
+            showError(apellido, "El apellido es obligatorio"); valido = false;
+        } else if (/\d/.test(apellido.value)) {
+            showError(apellido, "El apellido no debe contener números"); valido = false;
+        } else if (/[^a-zA-Z0-9 ]/.test(apellido.value)) {
+            showError(apellido, "El apellido no debe contener caracteres especiales"); valido = false;
+        } else if (apellido.value.replace(/[^a-zA-Z]/g, '').length < 3) {
+            showError(apellido, "El apellido debe tener al menos 3 letras"); valido = false;
+        } else {
+            hideError(apellido);
+        }
+
+        // Email
+        if (!email.value) {
+            showError(email, "El correo es obligatorio"); valido = false;
+        } else if (/[^a-zA-Z0-9.\-_+@]/.test(email.value)) {
+            showError(email, "El correo no debe contener caracteres especiales ni emojis"); valido = false;
+        } else {
+            const partes = email.value.split("@");
+            if (partes.length !== 2) {
+                showError(email, "El correo debe tener un solo @"); valido = false;
+            } else {
+                const dominio = partes[1];
+                const dominioNombre = dominio.split(".")[0];
+                if (/\d/.test(dominioNombre)) {
+                    showError(email, "El dominio del correo no debe contener números"); valido = false;
+                } else if (!/^[a-zA-Z]+\.[a-zA-Z]{2,}$/.test(dominio)) {
+                    showError(email, "El dominio debe ser válido (ej: gmail.com)"); valido = false;
+                } else {
+                    hideError(email);
+                }
+            }
+        }
+
+        // Contraseña
+        if (!contrasena.value) {
+            showError(contrasena, "La contraseña es obligatoria"); valido = false;
+        } else if (contrasena.value.length < 8) {
+            showError(contrasena, "La contraseña debe tener al menos 8 caracteres"); valido = false;
+        } else if (/[.:*'|°¬]/.test(contrasena.value)) {
+            showError(contrasena, "La contraseña no debe contener los caracteres: . : * ' | ° ¬"); valido = false;
+        } else {
+            hideError(contrasena);
+        }
+
+        // Confirmar contraseña
+        if (!confirmar.value) {
+            showError(confirmar, "Confirma tu contraseña"); valido = false;
+        } else if (contrasena.value !== confirmar.value) {
+            showError(confirmar, "Las contraseñas no coinciden"); valido = false;
+        } else {
+            hideError(confirmar);
+        }
+
+        // Términos
+        if (!checkbox.checked) {
+            alert("Debes aceptar los términos y condiciones");
+            valido = false;
+        }
+
+        // Si hay algún error, no enviar
+        if (!valido) return;
+
+        // Enviar datos
         try {
             const respuesta = await fetch("http://localhost:3000/api/usuarios", {
-                method: "POST", 
-                headers: {
-                    "Content-Type": "application/json", 
-                },
-                body: JSON.stringify({ 
-                    nombre, 
-                    apellido,
-                    email, 
-                    contrasena, 
-                    rol: "Cliente" // Por defecto, todos los usuarios registrados son clientes
-                }), 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    nombre: nombre.value,
+                    apellido: apellido.value,
+                    email: email.value,
+                    contrasena: contrasena.value,
+                    rol: "Cliente"
+                }),
             });
-
             const data = await respuesta.json();
-
             alert(data.message);
-
-            if (respuesta.ok) {
-                window.location.href = "login.html";
-            }
+            if (respuesta.ok) window.location.href = "login.html";
         } catch (error) {
-            console.error("Error en el registro:", error); 
-            alert("Ocurrió un error en el servidor"); 
-        }
-    });
-});
-
-
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('form');
-    const inputs = form.querySelectorAll('input[required]');
-    const password = document.getElementById('contrasena');
-    const confirmPassword = document.getElementById('confirmar-contrasena');
-    const email = document.getElementById('email');
-    
-    // Función para mostrar mensajes de error
-    function showError(input, message) {
-        const errorElement = input.nextElementSibling.nextElementSibling;
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-    }
-    
-    // Función para ocultar mensajes de error
-    function hideError(input) {
-        const errorElement = input.nextElementSibling.nextElementSibling;
-        errorElement.textContent = '';
-        errorElement.style.display = 'none';
-    }
-    
-    // Validación de correo electrónico
-    email.addEventListener('input', function() {
-        if (this.validity.patternMismatch) {
-            showError(this, 'El dominio del correo no debe contener números');
-        } else if (this.validity.typeMismatch) {
-            showError(this, 'Por favor, introduce un correo electrónico válido');
-        } else if (this.validity.valueMissing) {
-            showError(this, 'Este campo es obligatorio');
-        } else {
-            hideError(this);
-        }
-    });
-    
-    // Validación de nombre y apellido
-    document.getElementById('nombre').addEventListener('input', function() {
-        if (this.validity.patternMismatch) {
-            showError(this, 'El nombre no debe contener números');
-        } else if (this.validity.valueMissing) {
-            showError(this, 'Este campo es obligatorio');
-        } else {
-            hideError(this);
-        }
-    });
-    
-    document.getElementById('apellido').addEventListener('input', function() {
-        if (this.validity.patternMismatch) {
-            showError(this, 'El apellido no debe contener números');
-        } else if (this.validity.valueMissing) {
-            showError(this, 'Este campo es obligatorio');
-        } else {
-            hideError(this);
-        }
-    });
-    
-    // Validación de contraseña
-    password.addEventListener('input', function() {
-        if (this.validity.tooShort) {
-            showError(this, 'La contraseña debe tener al menos 8 caracteres');
-        } else if (this.validity.valueMissing) {
-            showError(this, 'Este campo es obligatorio');
-        } else {
-            hideError(this);
-        }
-        
-        // Verificar confirmación de contraseña cuando se cambia la contraseña
-        if (confirmPassword.value) {
-            if (password.value !== confirmPassword.value) {
-                showError(confirmPassword, 'Las contraseñas no coinciden');
-            } else {
-                hideError(confirmPassword);
-            }
-        }
-    });
-    
-    // Validación de confirmación de contraseña
-    confirmPassword.addEventListener('input', function() {
-        if (this.validity.valueMissing) {
-            showError(this, 'Este campo es obligatorio');
-        } else if (password.value !== this.value) {
-            showError(this, 'Las contraseñas no coinciden');
-        } else {
-            hideError(this);
-        }
-    });
-    
-    // Validación del formulario completo antes de enviar
-    form.addEventListener('submit', function(event) {
-        let isValid = true;
-        
-        // Verificar todos los campos
-        inputs.forEach(function(input) {
-            if (!input.validity.valid) {
-                isValid = false;
-                input.focus();
-                
-                if (input.id === 'nombre' || input.id === 'apellido') {
-                    if (input.validity.patternMismatch) {
-                        showError(input, `El ${input.id} no debe contener números`);
-                    } else {
-                        showError(input, 'Este campo es obligatorio');
-                    }
-                } else if (input.id === 'email') {
-                    if (input.validity.patternMismatch) {
-                        showError(input, 'El dominio del correo no debe contener números');
-                    } else {
-                        showError(input, 'Por favor, introduce un correo electrónico válido');
-                    }
-                } else if (input.id === 'contrasena') {
-                    showError(input, 'La contraseña debe tener al menos 8 caracteres');
-                } else if (input.id === 'confirmar-contrasena') {
-                    showError(input, 'Las contraseñas no coinciden');
-                }
-            }
-        });
-        
-        // Verificar que las contraseñas coincidan
-        if (password.value !== confirmPassword.value) {
-            isValid = false;
-            showError(confirmPassword, 'Las contraseñas no coinciden');
-        }
-        
-        // Verificar el checkbox de términos y condiciones
-        const checkbox = document.getElementById('aceptar');
-        if (!checkbox.checked) {
-            isValid = false;
-            alert('Debes aceptar los términos y condiciones');
-        }
-        
-        if (!isValid) {
-            event.preventDefault();
+            alert("Ocurrió un error en el servidor");
         }
     });
 });
