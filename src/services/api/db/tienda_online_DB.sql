@@ -1,25 +1,27 @@
-CREATE DATABASE tienda_online;
+CREATE DATABASE IF NOT EXISTS tienda_online;
 USE tienda_online;
-CREATE TABLE usuarios (
+
+CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     apellido VARCHAR(100),
-    email VARCHAR(100) unique,
+    email VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin UNIQUE,
     contrasena VARCHAR(100),
-    rol ENUM('Administrador', 'Cliente') DEFAULT 'Cliente'
+    rol ENUM('Administrador', 'Cliente', 'SuperUsuario') DEFAULT 'Cliente'
 );
 
-CREATE TABLE productos (
+CREATE TABLE IF NOT EXISTS productos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     imagen VARCHAR(500),
     precio DECIMAL(10,2),
     categoria VARCHAR(100),
     descripcion TEXT,
-    stock int default 10
+    stock INT DEFAULT 10,
+    activo TINYINT(1) NOT NULL DEFAULT 1
 );
 
-CREATE TABLE ventas (
+CREATE TABLE IF NOT EXISTS ventas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
     fecha_venta DATE,
@@ -28,14 +30,14 @@ CREATE TABLE ventas (
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
 );
 
-CREATE TABLE detalle_venta (
+CREATE TABLE IF NOT EXISTS detalle_venta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_producto INT,
     id_venta INT,
     cantidad INT,
     precio_unitario DECIMAL(10,2),
     FOREIGN KEY (id_producto) REFERENCES productos(id),
-    FOREIGN KEY (id_venta) REFERENCES ventas(id)
+    FOREIGN KEY (id_venta) REFERENCES ventas(id) ON DELETE CASCADE
 );
 
 INSERT INTO usuarios (nombre, apellido, email, contrasena, rol) VALUES
@@ -43,14 +45,9 @@ INSERT INTO usuarios (nombre, apellido, email, contrasena, rol) VALUES
 ('maicol', 'D', 'maic@bike.com', '12345678', 'Administrador'),
 ('Tony', 'Stark', 'tony@Stark.com', 'IronMan123', 'Cliente');
 
+INSERT INTO usuarios (nombre, apellido, email, contrasena, rol)
+VALUES ('Super', 'User', 'super@bike.com', 'superpass', 'SuperUsuario');
 
-INSERT INTO ventas (id_usuario, fecha_venta, estado_venta, venta_total) 
-VALUES 
-(1, '2023-05-15', 'Completada', 1250.75),
-(2, '2023-05-16', 'Pendiente', 899.99),
-(3, '2023-05-17', 'Cancelada', 450.50),
-(1, '2023-05-18', 'Completada', 3200.00),
-(4, '2023-05-19', 'En proceso', 175.25);
 
 show tables ;
 show databases ;
@@ -62,19 +59,15 @@ select * from detalle_venta;
 ALTER TABLE detalle_venta DROP FOREIGN KEY detalle_venta_ibfk_2;
 ALTER TABLE detalle_venta ADD CONSTRAINT detalle_venta_ibfk_2 FOREIGN KEY (id_venta) REFERENCES ventas(id) ON DELETE CASCADE;
 ALTER TABLE productos ADD COLUMN activo TINYINT(1) NOT NULL DEFAULT 1;
+ALTER TABLE usuarios MODIFY rol ENUM('Administrador', 'Cliente', 'SuperUsuario') DEFAULT 'Cliente';
+ALTER TABLE usuarios MODIFY email VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin;
 
-ALTER TABLE productos drop COLUMN caracteristicas ;
-ALTER TABLE productos ADD COLUMN caracteristicas TEXT;
-ALTER TABLE productos MODIFY imagen VARCHAR(255);
 
 DROP DATABASE tienda_online;
 DROP table ventas;
 DROP table detalle_venta;
 DROP table usuarios;
 DROP table productos;
-
-INSERT INTO ventas (id_usuario, fecha_venta, estado_venta, venta_total)
-VALUES (1, '2025-04-12', 'Completada', 1500.00);
 
 
  INSERT INTO productos (nombre, imagen, precio, categoria, descripcion) VALUES
