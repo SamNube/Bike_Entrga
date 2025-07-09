@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Bike Store</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../CSS/superUsuario-panel.css">
+</head>
+
+<body>
+    <div class="notification" id="notification"></div>
+
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="../img/logocion.png" alt="Bike Store Logo">
+                <h3>Super Usuario Panel</h3>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="active" onclick="showSection('usuarios')">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Administradores</span>
+                </li>
+                <li onclick="cerrarSesion()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar sesión</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Usuarios Section -->
+            <div class="section active" id="usuarios">
+                <div class="page-header">
+                    <h1>Gestión de Administradores</h1>
+                    <button class="btn-add" onclick="showUserModal()">
+                        <i class="fas fa-plus"></i> Nuevo Administrador
+                    </button>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Email</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usuarios-tabla">
+                        <!-- Aquí se cargarán los administradores dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Administrador -->
+    <div id="usuarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeUserModal()">&times;</span>
+            <h2 id="modalUserTitle">Nuevo Administrador</h2>
+            <form id="usuarioForm" class="product-form">
+                <input type="hidden" id="usuarioId">
+                <div class="form-group">
+                    <label for="nombreUsuario">Nombre:</label>
+                    <input type="text" id="nombreUsuario" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellidoUsuario">Apellido:</label>
+                    <input type="text" id="apellidoUsuario" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="emailUsuario">Email:</label>
+                    <input type="email" id="emailUsuario" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="contrasenaUsuario">Contraseña:</label>
+                    <input type="password" id="contrasenaUsuario" class="form-control" required>
+                </div>
+                <button type="submit" class="btn-submit">Guardar Administrador</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../JavaScript/superUsuario-panel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+</body>
+
+</html>

@@ -42,16 +42,22 @@ app.get('/api/usuarios', (req, res) => {
 // Crear usuario
 app.post('/api/usuarios', (req, res) => {
     const { nombre, apellido, email, contrasena, rol = 'Cliente' } = req.body;
+    const rolesPermitidos = ['Administrador', 'Cliente', 'SuperUsuario'];
     if (!nombre || !apellido || !email || !contrasena) {
         return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    }
+    if (!rolesPermitidos.includes(rol)) {
+        return res.status(400).json({ message: "Rol no permitido" });
     }
     const sql = "INSERT INTO usuarios (nombre, apellido, email, contrasena, rol) VALUES (?, ?, ?, ?, ?)";
     pool.query(sql, [nombre, apellido, email, contrasena, rol], (error, resultado) => {
         if (error) {
-            console.error("Error al registrar usuario:", error);
+            if (error.code === 'ER_DUP_ENTRY') {
+                return res.status(409).json({ message: "El email ya está registrado" });
+            }
             return res.status(500).json({ message: "Error al registrar usuario", error });
         }
-        res.json({ message: "Usuario registrado correctamente", id: resultado.insertId });
+        res.json({ message: "Usuario registrado correctamente" });
     });
 });
 
@@ -59,17 +65,32 @@ app.post('/api/usuarios', (req, res) => {
 app.put('/api/usuarios/:id', (req, res) => {
     const { id } = req.params;
     const { nombre, apellido, email, contrasena, rol } = req.body;
+    const rolesPermitidos = ['Administrador', 'Cliente', 'SuperUsuario'];
     if (!nombre || !apellido || !email || !contrasena) {
         return res.status(400).json({ message: "Todos los campos son obligatorios" });
     }
+    if (!rolesPermitidos.includes(rol)) {
+        return res.status(400).json({ message: "Rol no válido" });
+    }
 
-    const sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, contrasena = ?, rol = ? WHERE id = ?";
-    pool.query(sql, [nombre, apellido, email, contrasena, rol, id], (error, resultado) => {
-        if (error) {
-            console.error("Error al actualizar usuario:", error);
-            return res.status(500).json({ message: "Error al actualizar usuario", error });
+    // Verificar si el email ya existe en otro usuario
+    const sqlCheck = "SELECT id FROM usuarios WHERE email = ? AND id != ?";
+    pool.query(sqlCheck, [email, id], (errorCheck, resultadosCheck) => {
+        if (errorCheck) {
+            return res.status(500).json({ message: "Error al verificar email", error: errorCheck });
         }
-        res.json({ message: "Usuario actualizado correctamente" });
+        if (resultadosCheck.length > 0) {
+            return res.status(409).json({ message: "El email ya está registrado" });
+        }
+
+        const sql = "UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, contrasena = ?, rol = ? WHERE id = ?";
+        pool.query(sql, [nombre, apellido, email, contrasena, rol, id], (error, resultado) => {
+            if (error) {
+                console.error("Error al actualizar usuario:", error);
+                return res.status(500).json({ message: "Error al actualizar usuario", error });
+            }
+            res.json({ message: "Usuario actualizado correctamente" });
+        });
     });
 });
 
