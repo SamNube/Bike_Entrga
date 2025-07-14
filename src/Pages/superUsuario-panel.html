@@ -68,19 +68,28 @@
                 <input type="hidden" id="usuarioId">
                 <div class="form-group">
                     <label for="nombreUsuario">Nombre:</label>
-                    <input type="text" id="nombreUsuario" class="form-control" required>
+                    <input type="text" id="nombreUsuario" class="form-control" pattern="[a-zA-Z]{3,}[a-zA-Z0-9 ]*"
+                        required title="Ingrese el Nombre correctamente">
                 </div>
                 <div class="form-group">
                     <label for="apellidoUsuario">Apellido:</label>
-                    <input type="text" id="apellidoUsuario" class="form-control" required>
+                    <input type="text" id="apellidoUsuario" class="form-control" pattern="[a-zA-Z]{3,}[a-zA-Z0-9 ]*"
+                        title="Ingrese el Apellido correctamente" required>
                 </div>
                 <div class="form-group">
                     <label for="emailUsuario">Email:</label>
-                    <input type="email" id="emailUsuario" class="form-control" required>
+                    <input type="email" id="emailUsuario" class="form-control"
+                        pattern="[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}"
+                        title="Solo se permiten letras, números, puntos, guiones y guión bajo. El email debe tener un formato válido como: usuario@dominio.com"
+                        oninput="this.setCustomValidity('')"
+                        oninvalid="this.setCustomValidity('Formato de email inválido. Solo se permiten letras, números, puntos, guiones y guión bajo.')"
+                        required>   
                 </div>
                 <div class="form-group">
                     <label for="contrasenaUsuario">Contraseña:</label>
-                    <input type="password" id="contrasenaUsuario" class="form-control" required>
+                    <input type="password" id="contrasenaUsuario" class="form-control" pattern="[^.:*'|°¬]+"
+                        title="La contraseña no debe contener los caracteres: . : * ' | ° ¬" minlength="8" required
+                        onpaste="return false;" oncopy="return false;" oncut="return false;" placeholder=" ">
                 </div>
                 <button type="submit" class="btn-submit">Guardar Administrador</button>
             </form>
@@ -90,6 +99,106 @@
     <script src="../JavaScript/superUsuario-panel.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.7.0/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        // Validación de email para el campo emailUsuario
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('emailUsuario');
+            
+            if (emailInput) {
+                // Patrón estricto para validación de email
+                const emailPattern = /^[a-zA-Z0-9]+([._-][a-zA-Z0-9]+)*@[a-zA-Z0-9]+([.-][a-zA-Z0-9]+)*\.[a-zA-Z]{2,}$/;
+                
+                // Lista de caracteres prohibidos
+                const forbiddenChars = /[!@#$%^&*()+=\[\]{}|\\:";'<>?,/`~]/;
+                
+                function validateEmail(email) {
+                    // Verificar que no esté vacío
+                    if (!email || email.trim() === '') {
+                        return false;
+                    }
+                    
+                    // Verificar caracteres prohibidos (excepto @ que es necesario para el email)
+                    const emailParts = email.split('@');
+                    if (emailParts.length !== 2) {
+                        return false;
+                    }
+                    
+                    // Verificar caracteres prohibidos en la parte local (antes del @)
+                    const localPart = emailParts[0];
+                    const domainPart = emailParts[1];
+                    
+                    if (forbiddenChars.test(localPart) || forbiddenChars.test(domainPart)) {
+                        return false;
+                    }
+                    
+                    // Verificar patrón completo
+                    return emailPattern.test(email);
+                }
+                
+                function showEmailError(message) {
+                    emailInput.setCustomValidity(message);
+                    emailInput.reportValidity();
+                }
+                
+                function clearEmailError() {
+                    emailInput.setCustomValidity('');
+                }
+                
+                // Validación en tiempo real mientras el usuario escribe
+                emailInput.addEventListener('input', function() {
+                    const email = this.value;
+                    
+                    if (email === '') {
+                        clearEmailError();
+                        return;
+                    }
+                    
+                    if (!validateEmail(email)) {
+                        showEmailError('Formato de email inválido. Solo se permiten letras, números, puntos, guiones y guión bajo.');
+                    } else {
+                        clearEmailError();
+                    }
+                });
+                
+                // Validación al perder el foco
+                emailInput.addEventListener('blur', function() {
+                    const email = this.value;
+                    
+                    if (email !== '' && !validateEmail(email)) {
+                        showEmailError('Formato de email inválido. Solo se permiten letras, números, puntos, guiones y guión bajo.');
+                    }
+                });
+                
+                // Validación antes de enviar el formulario
+                const usuarioForm = document.getElementById('usuarioForm');
+                if (usuarioForm) {
+                    usuarioForm.addEventListener('submit', function(event) {
+                        const email = emailInput.value;
+                        
+                        if (!validateEmail(email)) {
+                            event.preventDefault();
+                            showEmailError('Formato de email inválido. Solo se permiten letras, números, puntos, guiones y guión bajo.');
+                            emailInput.focus();
+                            return false;
+                        }
+                        
+                        clearEmailError();
+                    });
+                }
+                
+                // Prevenir pegar contenido inválido
+                emailInput.addEventListener('paste', function(event) {
+                    setTimeout(() => {
+                        const email = this.value;
+                        if (!validateEmail(email)) {
+                            showEmailError('Formato de email inválido. Solo se permiten letras, números, puntos, guiones y guión bajo.');
+                        }
+                    }, 10);
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

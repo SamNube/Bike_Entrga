@@ -52,6 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
     email.addEventListener("input", function () {
         if (!this.value) {
             showError(this, "El correo es obligatorio");
+        } else if (this.value.startsWith("@")) {
+            showError(this, "El correo no puede comenzar con @");
         } else if (/[^a-zA-Z0-9.\-_+@]/.test(this.value)) {
             showError(this, "El correo no debe contener caracteres especiales ni emojis");
         } else {
@@ -126,6 +128,8 @@ document.addEventListener("DOMContentLoaded", function () {
         // Email
         if (!email.value) {
             showError(email, "El correo es obligatorio"); valido = false;
+        } else if (email.value.startsWith("@")) {
+            showError(email, "El correo no puede comenzar con @"); valido = false;
         } else if (/[^a-zA-Z0-9.\-_+@]/.test(email.value)) {
             showError(email, "El correo no debe contener caracteres especiales ni emojis"); valido = false;
         } else {
